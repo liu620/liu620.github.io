@@ -17,8 +17,8 @@
   <meta name="keywords" content="">
   
     <meta property="og:type" content="website">
-<meta property="og:title" content="友链">
-<meta property="og:url" content="http://example.com/links/index.html">
+<meta property="og:title" content="Hexo">
+<meta property="og:url" content="http://example.com/page/2/index.html">
 <meta property="og:site_name" content="Hexo">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:author" content="John Doe">
@@ -26,7 +26,7 @@
   
   
   
-  <title>友链 - Hexo</title>
+  <title>Hexo</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -80,7 +80,7 @@
   <header>
     
 
-<div class="header-inner" style="height: 60vh;">
+<div class="header-inner" style="height: 100vh;">
   <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand" href="/">
@@ -186,13 +186,17 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="友情链接"></span>
+            <span id="subtitle" data-typed-text="宁静方能致远，请静下心来思考和写作"></span>
           
         </div>
 
         
       </div>
 
+      
+        <div class="scroll-down-bar">
+          <i class="iconfont icon-arrowdown"></i>
+        </div>
       
     </div>
   </div>
@@ -206,72 +210,219 @@
     
       <div class="container nopadding-x-md">
         <div id="board"
-          >
+          style="margin-top: 0">
           
           <div class="container">
             <div class="row">
               <div class="col-12 col-md-10 m-auto">
                 
 
-<div class="row links">
-  
+
+  <div class="row mx-auto index-card">
     
-    <div class="card col-lg-4 col-md-6 col-sm-12">
-      <a href="https://hexo.fluid-dev.com/" class="card-body hover-with-bg" target="_blank" rel="noopener">
-        <div class="card-content">
-          
-            <div class="link-avatar my-auto">
-              <img src="/img/favicon.png" srcset="/img/loading.gif" lazyload alt="Fluid Blog"
-                   onerror="this.onerror=null; this.src=this.srcset='/img/avatar.png'"/>
-            </div>
-          
-          <div class="link-text">
-            <div class="link-title">Fluid Blog</div>
-            <div class="link-intro">主题博客</div>
-          </div>
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2021/08/17/%E4%B8%80%E6%96%87%E7%9C%8B%E6%87%82Java%20%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%86%85%E5%AD%98/" target="_self">
+          一文看懂Java 对象的内存
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2021/08/17/%E4%B8%80%E6%96%87%E7%9C%8B%E6%87%82Java%20%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%86%85%E5%AD%98/" target="_self">
+        <div>
+          说明本文绝大多数内容，都是直接摘自 高端面试必备：一个 Java 对象占用多大内存，因为这篇文章写得太好了，我觉得没有必要重新写一遍了 0_o Java 对象模型HotSpot JVM 使用名为 oops (Ordinary Object Pointers) 的数据结构来表示对象。这些 oops 等同于本地 C 指针。 instanceOops 是一种特殊的 oop，表示 Java 中的对象实例。
         </div>
       </a>
-    </div>
-  
-    
-    <div class="card col-lg-4 col-md-6 col-sm-12">
-      <a href="https://hexo.fluid-dev.com/docs/" class="card-body hover-with-bg" target="_blank" rel="noopener">
-        <div class="card-content">
-          
-            <div class="link-avatar my-auto">
-              <img src="/img/favicon.png" srcset="/img/loading.gif" lazyload alt="Fluid Docs"
-                   onerror="this.onerror=null; this.src=this.srcset='/img/avatar.png'"/>
-            </div>
-          
-          <div class="link-text">
-            <div class="link-title">Fluid Docs</div>
-            <div class="link-intro">主题使用指南</div>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2021-08-17 21:00" pubdate>
+              2021-08-17
+            </time>
           </div>
+        
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2021/07/31/Java%20Agent%20%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97%20-%20%E7%A0%B4%E8%A7%A3%20IDEA/" target="_self">
+          Java Agent 使用指南
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2021/07/31/Java%20Agent%20%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97%20-%20%E7%A0%B4%E8%A7%A3%20IDEA/" target="_self">
+        <div>
+          Java Agent 是什么？Java Agent 是一个特殊的 jar 文件，利用 JVM 的 Instrumentation API 来更改加载到 JVM 中的字节码。一共有 2 种方式：  premain：使用 -javaagent 参数在 JVM 启动时静态加载代理 agentmain：使用 Java Attach API 将代理动态加载到 JVM 中  需要说明的是，Oracle、Ope
         </div>
       </a>
-    </div>
-  
-    
-    <div class="card col-lg-4 col-md-6 col-sm-12">
-      <a href="https://github.com/fluid-dev/hexo-theme-fluid" class="card-body hover-with-bg" target="_blank" rel="noopener">
-        <div class="card-content">
-          
-            <div class="link-avatar my-auto">
-              <img src="/img/favicon.png" srcset="/img/loading.gif" lazyload alt="Fluid Repo"
-                   onerror="this.onerror=null; this.src=this.srcset='/img/avatar.png'"/>
-            </div>
-          
-          <div class="link-text">
-            <div class="link-title">Fluid Repo</div>
-            <div class="link-intro">主题 GitHub 仓库</div>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2021-07-31 21:00" pubdate>
+              2021-07-31
+            </time>
           </div>
+        
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2021/07/27/Java%E8%B5%84%E6%BA%90%E5%A4%A7%E5%85%A8%E4%B8%AD%E6%96%87%E7%89%88/" target="_self">
+          Java资源大全中文版
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2021/07/27/Java%E8%B5%84%E6%BA%90%E5%A4%A7%E5%85%A8%E4%B8%AD%E6%96%87%E7%89%88/" target="_self">
+        <div>
+          前言GitHub项目地址：https://github.com/jobbole/awesome-java-cn Java资源大全中文版我想很多程序员应该记得 GitHub 上有一个 Awesome - XXX 系列的资源整理。awesome-java 就是 akullpp 发起维护的 Java 资源列表，内容包括：构建工具、数据库、框架、模板、安全、代码分析、日志、第三方库、书籍、Java 站点等
         </div>
       </a>
-    </div>
-  
-</div>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2021-07-27 21:00" pubdate>
+              2021-07-27
+            </time>
+          </div>
+        
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2020/12/10/%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90%20Java%E3%80%81Kotlin%E3%80%81Go%20%E7%9A%84%E7%BA%BF%E7%A8%8B%E5%92%8C%E5%8D%8F%E7%A8%8B/" target="_self">
+          深入分析 Java、Kotlin、Go 的线程和协程
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2020/12/10/%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90%20Java%E3%80%81Kotlin%E3%80%81Go%20%E7%9A%84%E7%BA%BF%E7%A8%8B%E5%92%8C%E5%8D%8F%E7%A8%8B/" target="_self">
+        <div>
+          前言Go 语言比 Java 语言性能优越的一个原因，就是轻量级线程Goroutines（协程Coroutine）。本篇文章深入分析下 Java 的线程和 Go 的协程。 协程是什么协程并不是 Go 提出来的新概念，其他的一些编程语言，例如：Go、Python 等都可以在语言层面上实现协程，甚至是 Java，也可以通过使用扩展库来间接地支持协程。 当在网上搜索协程时，我们会看到：  Kotlin
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2020-12-10 21:00" pubdate>
+              2020-12-10
+            </time>
+          </div>
+        
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2020/12/08/%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90%20Java%20%E4%B9%90%E8%A7%82%E9%94%81/" target="_self">
+          深入分析 Java 乐观锁
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2020/12/08/%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90%20Java%20%E4%B9%90%E8%A7%82%E9%94%81/" target="_self">
+        <div>
+          前言激烈的锁竞争，会造成线程阻塞挂起，导致系统的上下文切换，增加系统的性能开销。那有没有不阻塞线程，且保证线程安全的机制呢？——乐观锁。 乐观锁是什么？操作共享资源时，总是很乐观，认为自己可以成功。在操作失败时（资源被其他线程占用），并不会挂起阻塞，而仅仅是返回，并且失败的线程可以重试。 优点：  不会死锁 不会饥饿 不会因竞争造成系统开销  乐观锁的实现CAS 原子操作CAS。在 java.u
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2020-12-08 21:00" pubdate>
+              2020-12-08
+            </time>
+          </div>
+        
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h2 class="index-header">
+        
+        <a href="/2020/12/07/%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90%20Java%20Lock%20%E5%90%8C%E6%AD%A5%E9%94%81/" target="_self">
+          深入分析 Java Lock 同步锁
+        </a>
+      </h2>
+
+      
+      <a class="index-excerpt index-excerpt__noimg" href="/2020/12/07/%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90%20Java%20Lock%20%E5%90%8C%E6%AD%A5%E9%94%81/" target="_self">
+        <div>
+          前言Java 的锁实现，有 Synchronized 和 Lock。上一篇文章深入分析了 Synchronized 的实现原理：由Java 15废弃偏向锁，谈谈Java Synchronized 的锁机制。 本篇文章深入分析 Lock 的实现，以及对比其与 Synchronized 的不同。 Synchronized 与 Lock 的对比 实现方式：Synchronized 由 JVM 实现；L
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2020-12-07 21:00" pubdate>
+              2020-12-07
+            </time>
+          </div>
+        
+        
+        
+      </div>
+    </article>
+  </div>
 
 
+
+  <nav aria-label="navigation">
+    <span class="pagination" id="pagination">
+      <a class="extend prev" rel="prev" href="/"><i class="iconfont icon-arrowleft"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span>
+    </span>
+  </nav>
 
 
 
