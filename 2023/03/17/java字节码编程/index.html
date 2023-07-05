@@ -23,12 +23,12 @@
 <meta property="og:site_name" content="爱麟的博客">
 <meta property="og:description" content="1. javaagent1) 简述从java5开始，jdk中新增了一个java.lang.instrument.Instrumentation 类，它提供在运行时重新加载某个类的的class文件的api。通过addTransformer可以加入一个转换器，转换器可以实现对类加载的事件进行拦截并返回转换后新的字节码，通过redefineClasses或retransformClasses都可以触发">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://img-blog.csdnimg.cn/0f1f794bf9d74d71a44d2d4d52a80dc1.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MDU3NDY0NA==,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://620image.oss-rg-china-mainland.aliyuncs.com/java%E5%AD%97%E8%8A%82%E7%A0%81%E7%BC%96%E7%A8%8B.png">
 <meta property="article:published_time" content="2023-03-17T01:43:13.000Z">
-<meta property="article:modified_time" content="2023-07-05T03:37:54.971Z">
+<meta property="article:modified_time" content="2023-07-05T03:40:14.186Z">
 <meta property="article:author" content="alen">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://img-blog.csdnimg.cn/0f1f794bf9d74d71a44d2d4d52a80dc1.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MDU3NDY0NA==,size_16,color_FFFFFF,t_70#pic_center">
+<meta name="twitter:image" content="https://620image.oss-rg-china-mainland.aliyuncs.com/java%E5%AD%97%E8%8A%82%E7%A0%81%E7%BC%96%E7%A8%8B.png">
   
   
   
@@ -274,7 +274,7 @@
             
               <div class="markdown-body">
                 
-                <p><img src="https://img-blog.csdnimg.cn/0f1f794bf9d74d71a44d2d4d52a80dc1.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MDU3NDY0NA==,size_16,color_FFFFFF,t_70#pic_center" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"></p>
+                <p><img src="https://620image.oss-rg-china-mainland.aliyuncs.com/java%E5%AD%97%E8%8A%82%E7%A0%81%E7%BC%96%E7%A8%8B.png" srcset="/img/loading.gif" lazyload alt="在这里插入图片描述"></p>
 <h2 id="1-javaagent"><a href="#1-javaagent" class="headerlink" title="1. javaagent"></a>1. javaagent</h2><h3 id="1-简述"><a href="#1-简述" class="headerlink" title="1) 简述"></a>1) 简述</h3><p>从java5开始，jdk中新增了一个java.lang.instrument.Instrumentation 类，它提供在运行时重新加载某个类的的class文件的api。<br>通过addTransformer可以加入一个转换器，转换器可以实现对类加载的事件进行拦截并返回转换后新的字节码，通过redefineClasses或retransformClasses都可以触发类的重新加载事件。</p>
 <h3 id="2-加载方式"><a href="#2-加载方式" class="headerlink" title="2)加载方式"></a>2)加载方式</h3><ul>
 <li>在jvm启动时指定agent，Instrumentation对象会通过agent的premain方法传递。</li>

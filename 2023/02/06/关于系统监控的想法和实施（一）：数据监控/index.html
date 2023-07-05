@@ -23,10 +23,12 @@
 <meta property="og:site_name" content="爱麟的博客">
 <meta property="og:description" content="​	大家好，我是爱吃里脊，下面由我来讨论下监控的想法。提到监控，对于维护系统至关重要，对发现问题，解决问题起着决定性的作用。我们来先来进行整体拆解，一个监控系统包含三个主体：数据采集，数据处理，数据展示。这次我们先来了解数据采集。首先要做监控系统首先得有一个监控对象，了解监控对象需要什么指标，比如一个业务后台系统，需要知道物理指标有的cup，磁盘，负载，魔法指标有接口调用数，接口的tp99，接口的">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://620image.oss-rg-china-mainland.aliyuncs.com/2023-01-01%2024123213.png">
 <meta property="article:published_time" content="2023-02-06T10:35:31.000Z">
-<meta property="article:modified_time" content="2023-07-05T03:37:34.493Z">
+<meta property="article:modified_time" content="2023-07-05T03:40:35.664Z">
 <meta property="article:author" content="alen">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://620image.oss-rg-china-mainland.aliyuncs.com/2023-01-01%2024123213.png">
   
   
   
@@ -283,6 +285,7 @@
 <p>​	很显然，如果在应用程序里写这些监控处理，是很笨的，业务代码与功能代码耦合，违反了程序软件开发的开闭原则，单一原则。对之后的维护添堵。比较好的方式是机器安装客户端，或者应用集成客户端来进行采集，应用的日志可以通过aop的方式打印上传，为了尽可能的减少对业务代码的影响，可采用独立线程定时同步或者中间件mq，redis等定时同步。这是推日志的方式，对一些实时性较高的监控还可以进行服务端拉取的方式，这种方式较为复杂，需要客户端注册服务到服务中心，服务端获取服务中心服务后，主动请求目标的日志来拉取。</p>
 <p>这里可以举个例子：<br>     push方法用于<a target="_blank" rel="noopener" href="https://graphiteapp.org/">Graphite</a>等系统，而pull方法用于<a target="_blank" rel="noopener" href="https://prometheus.io/">Prometheus</a>等监视系统。但是无论哪种方式，基本思想都是这种组件化，独立处理，异步上传日志。</p>
 <p>​	下边说说日志结构，监控数据包含在日志中，所以日志的输出不能全部写在一个文件处理，需要对日志归档，日志分类，保持日志大小不能过大，保证日志不混乱分析清晰。而且在输出日志前，需要先定义监控数据结构，结构中包含上述所说的种种指标，为后续数据分析和展示做好铺垫。在elk中，es的数据结构是文档格式，在java应用的系统中可以将对象反序列化成json数组，而且es的性能很好，可以做复杂的索引，全文检索，聚合查询，这点可以解决日志问题，但是不是所有监控系统都是用es的，其他存储这点要注意。<br>最后就是配置相关了，好的监控系统需要有运维界面，来实现可配置可插拔，对一些数据指标问题进行报警配置，对于数据收集这块，不可能是所有指标照单全收，而在监控的初期可能不会明确那些不需要，而且监控系统不成熟，那么就需要在开发前期预留配置的扩展点，保证对后续开发的支持。</p>
+<p><img src="https://620image.oss-rg-china-mainland.aliyuncs.com/2023-01-01%2024123213.png" srcset="/img/loading.gif" lazyload></p>
 
                 
               </div>
