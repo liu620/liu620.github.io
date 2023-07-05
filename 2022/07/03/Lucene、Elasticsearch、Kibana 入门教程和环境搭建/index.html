@@ -16,14 +16,13 @@
   <meta name="author" content="alen">
   <meta name="keywords" content="">
   
-    <meta name="description" content="公众号coding 笔记、点滴记录，以后的文章也会同步到公众号（Coding Insight）中，希望大家关注^_^  信息检索模型信息检索模型最重要的概念就是倒排索引，倒排索引是搜索引擎中常见的索引方法，用来存储在全文搜索下某个单词在一个文档中存储位置的映射。通过倒排索引，我们输入一个关键词，可以非常快地获取包含这个关键词的文档列表。  LuceneLucene 是一个基于 Java 的全文信息">
+    <meta name="description" content="信息检索模型信息检索模型最重要的概念就是倒排索引，倒排索引是搜索引擎中常见的索引方法，用来存储在全文搜索下某个单词在一个文档中存储位置的映射。通过倒排索引，我们输入一个关键词，可以非常快地获取包含这个关键词的文档列表。  LuceneLucene 是一个基于 Java 的全文信息检索工具包，它不是一个完整的搜索应用程序，而是为你的应用程序提供索引和搜索功能。Lucene 目前是 Apache Ja">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Lucene、Elasticsearch、Kibana 入门教程和环境搭建">
 <meta property="og:url" content="https://liu620.github.io/2022/07/03/Lucene%E3%80%81Elasticsearch%E3%80%81Kibana%20%E5%85%A5%E9%97%A8%E6%95%99%E7%A8%8B%E5%92%8C%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/index.html">
 <meta property="og:site_name" content="爱麟的博客">
-<meta property="og:description" content="公众号coding 笔记、点滴记录，以后的文章也会同步到公众号（Coding Insight）中，希望大家关注^_^  信息检索模型信息检索模型最重要的概念就是倒排索引，倒排索引是搜索引擎中常见的索引方法，用来存储在全文搜索下某个单词在一个文档中存储位置的映射。通过倒排索引，我们输入一个关键词，可以非常快地获取包含这个关键词的文档列表。  LuceneLucene 是一个基于 Java 的全文信息">
+<meta property="og:description" content="信息检索模型信息检索模型最重要的概念就是倒排索引，倒排索引是搜索引擎中常见的索引方法，用来存储在全文搜索下某个单词在一个文档中存储位置的映射。通过倒排索引，我们输入一个关键词，可以非常快地获取包含这个关键词的文档列表。  LuceneLucene 是一个基于 Java 的全文信息检索工具包，它不是一个完整的搜索应用程序，而是为你的应用程序提供索引和搜索功能。Lucene 目前是 Apache Ja">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://yano.oss-cn-beijing.aliyuncs.com/2019-07-29-qrcode_for_gh_a26ce4572791_258.jpg">
 <meta property="og:image" content="http://yano.oss-cn-beijing.aliyuncs.com/2020-07-02-140114.png">
 <meta property="og:image" content="http://yano.oss-cn-beijing.aliyuncs.com/2020-07-02-142736.png">
 <meta property="og:image" content="http://yano.oss-cn-beijing.aliyuncs.com/2020-07-02-141536.png">
@@ -34,10 +33,10 @@
 <meta property="og:image" content="http://yano.oss-cn-beijing.aliyuncs.com/2020-07-02-154129.png">
 <meta property="og:image" content="http://yano.oss-cn-beijing.aliyuncs.com/2020-07-02-154226.png">
 <meta property="article:published_time" content="2022-07-03T13:00:00.000Z">
-<meta property="article:modified_time" content="2023-07-04T07:28:58.026Z">
+<meta property="article:modified_time" content="2023-07-05T03:00:49.316Z">
 <meta property="article:author" content="alen">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://yano.oss-cn-beijing.aliyuncs.com/2019-07-29-qrcode_for_gh_a26ce4572791_258.jpg">
+<meta name="twitter:image" content="http://yano.oss-cn-beijing.aliyuncs.com/2020-07-02-140114.png">
   
   
   
@@ -230,7 +229,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          9.5k 字
+          9.4k 字
         
       </span>
     
@@ -241,7 +240,7 @@
         
         
         
-          80 分钟
+          79 分钟
         
       </span>
     
@@ -283,9 +282,7 @@
             
               <div class="markdown-body">
                 
-                <h1 id="公众号"><a href="#公众号" class="headerlink" title="公众号"></a>公众号</h1><p>coding 笔记、点滴记录，以后的文章也会同步到公众号（Coding Insight）中，希望大家关注^_^</p>
-<p><img src="http://yano.oss-cn-beijing.aliyuncs.com/2019-07-29-qrcode_for_gh_a26ce4572791_258.jpg" srcset="/img/loading.gif" lazyload></p>
-<h1 id="信息检索模型"><a href="#信息检索模型" class="headerlink" title="信息检索模型"></a>信息检索模型</h1><p>信息检索模型最重要的概念就是<code>倒排索引</code>，倒排索引是搜索引擎中常见的索引方法，用来存储在全文搜索下某个单词在一个文档中存储位置的映射。通过倒排索引，我们输入一个关键词，可以非常快地获取包含这个关键词的文档列表。</p>
+                <h1 id="信息检索模型"><a href="#信息检索模型" class="headerlink" title="信息检索模型"></a>信息检索模型</h1><p>信息检索模型最重要的概念就是<code>倒排索引</code>，倒排索引是搜索引擎中常见的索引方法，用来存储在全文搜索下某个单词在一个文档中存储位置的映射。通过倒排索引，我们输入一个关键词，可以非常快地获取包含这个关键词的文档列表。</p>
 <p><img src="http://yano.oss-cn-beijing.aliyuncs.com/2020-07-02-140114.png" srcset="/img/loading.gif" lazyload></p>
 <h1 id="Lucene"><a href="#Lucene" class="headerlink" title="Lucene"></a>Lucene</h1><p>Lucene 是一个基于 Java 的全文信息检索工具包，它不是一个完整的搜索应用程序，而是为你的应用程序提供索引和搜索功能。Lucene 目前是 Apache Jakarta 家族中的一个开源项目。也是目前最为流行的基于 Java 开源全文检索工具包。</p>
 <p>Elasticsearch 就是基于 Lucene 的。</p>
@@ -390,6 +387,27 @@
             <hr/>
             <div>
               <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E7%BB%84%E4%BB%B6-%E4%B8%AD%E9%97%B4%E4%BB%B6%E7%9F%A5%E8%AF%86/" class="category-chain-item">组件&amp;中间件知识</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
   
   
 </div>
