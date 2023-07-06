@@ -20,7 +20,7 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="Netty HashedWheelTimer 时间轮源码详解">
 <meta property="og:url" content="https://liu620.github.io/2022/03/02/Netty%20HashedWheelTimer%20%E6%97%B6%E9%97%B4%E8%BD%AE%E6%BA%90%E7%A0%81%E8%AF%A6%E8%A7%A3/index.html">
-<meta property="og:site_name" content="爱麟的博客">
+<meta property="og:site_name" content="Alen’s blog">
 <meta property="og:description" content="背景HashedWheelTimer 本质是一种类似延迟任务队列的实现，适用于对时效性不高的，可快速执行的，大量这样的“小”任务，能够做到高性能，低消耗。 时间轮是一种非常惊艳的数据结构。其在 Linux 内核中使用广泛，是 Linux 内核定时器的实现方法和基础之一。Netty 内部基于时间轮实现了一个 HashedWheelTimer 来优化 I&#x2F;O 超时的检测。 因为 Netty">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://yano.oss-cn-beijing.aliyuncs.com/blog/20210302165947.png">
@@ -32,7 +32,7 @@
   
   
   
-  <title>Netty HashedWheelTimer 时间轮源码详解 - 爱麟的博客</title>
+  <title>Netty HashedWheelTimer 时间轮源码详解 - Alen’s blog</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
