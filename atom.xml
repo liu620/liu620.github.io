@@ -1,0 +1,492 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Ali’s blog</title>
+  <icon>https://liu620.github.io/img/favicon.png</icon>
+  
+  <link href="https://liu620.github.io/atom.xml" rel="self"/>
+  
+  <link href="https://liu620.github.io/"/>
+  <updated>2025-06-29T13:31:52.368Z</updated>
+  <id>https://liu620.github.io/</id>
+  
+  <author>
+    <name>alen</name>
+    
+  </author>
+  
+  <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>码农也要有新视角-项目管理的学习</title>
+    <link href="https://liu620.github.io/2025/06/29/%E7%A0%81%E5%86%9C%E4%B9%9F%E8%A6%81%E6%9C%89%E6%96%B0%E8%A7%86%E8%A7%92-%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86%E7%9A%84%E5%AD%A6%E4%B9%A0/"/>
+    <id>https://liu620.github.io/2025/06/29/%E7%A0%81%E5%86%9C%E4%B9%9F%E8%A6%81%E6%9C%89%E6%96%B0%E8%A7%86%E8%A7%92-%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86%E7%9A%84%E5%AD%A6%E4%B9%A0/</id>
+    <published>2025-06-29T20:13:16.000Z</published>
+    <updated>2025-06-29T13:31:52.368Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;&lt;img src=&quot;https://liual-image.oss-cn-chengdu.aliyuncs.com/uPic/Typora-2025-06-29-IVLKsHvF@2x.png&quot;&gt;&lt;/p&gt;
+&lt;h1 id=&quot;1-每个人都有必要学习项目管理&quot;&gt;&lt;a</summary>
+        
+      
+    
+    
+    
+    <category term="项目管理" scheme="https://liu620.github.io/categories/%E9%A1%B9%E7%9B%AE%E7%AE%A1%E7%90%86/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>抓虫(bug)系列-概述</title>
+    <link href="https://liu620.github.io/2025/06/27/%E6%8A%93%E8%99%AB(bug)%E7%B3%BB%E5%88%97-%E6%A6%82%E8%BF%B0/"/>
+    <id>https://liu620.github.io/2025/06/27/%E6%8A%93%E8%99%AB(bug)%E7%B3%BB%E5%88%97-%E6%A6%82%E8%BF%B0/</id>
+    <published>2025-06-27T19:15:44.000Z</published>
+    <updated>2025-06-29T13:31:52.367Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;&lt;img src=&quot;https://liual-image.oss-cn-chengdu.aliyuncs.com/uPic/v2-12bd050eac3400eb4f7fcaf38b3be3be_1440w.jpeg&quot;&gt;&lt;/p&gt;
+&lt;h1 id=&quot;写这个系列的初衷&quot;&gt;&lt;a</summary>
+        
+      
+    
+    
+    
+    <category term="抓虫专栏" scheme="https://liu620.github.io/categories/%E6%8A%93%E8%99%AB%E4%B8%93%E6%A0%8F/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>深入理解kafka-核心技术与实战篇【干的要命系列】（二）</title>
+    <link href="https://liu620.github.io/2025/06/24/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3kafka-%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E4%B8%8E%E5%AE%9E%E6%88%98%E7%AF%87%E3%80%90%E5%B9%B2%E7%9A%84%E8%A6%81%E5%91%BD%E7%B3%BB%E5%88%97%E3%80%91%EF%BC%88%E4%BA%8C%EF%BC%89/"/>
+    <id>https://liu620.github.io/2025/06/24/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3kafka-%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E4%B8%8E%E5%AE%9E%E6%88%98%E7%AF%87%E3%80%90%E5%B9%B2%E7%9A%84%E8%A6%81%E5%91%BD%E7%B3%BB%E5%88%97%E3%80%91%EF%BC%88%E4%BA%8C%EF%BC%89/</id>
+    <published>2025-06-24T23:10:30.000Z</published>
+    <updated>2025-06-29T13:31:52.368Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;&lt;img src=&quot;https://liual-image.oss-cn-chengdu.aliyuncs.com/uPic/image-20250619201202850.png&quot;&gt;&lt;/p&gt;
+&lt;p&gt;书接上文 &lt;a</summary>
+        
+      
+    
+    
+    
+    <category term="消息队列" scheme="https://liu620.github.io/categories/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>深入理解kafka-核心技术与实战篇【干的要命系列】（一）</title>
+    <link href="https://liu620.github.io/2025/06/19/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3kafka-%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E4%B8%8E%E5%AE%9E%E6%88%98%E7%AF%87%E3%80%90%E5%B9%B2%E7%9A%84%E8%A6%81%E5%91%BD%E7%B3%BB%E5%88%97%E3%80%91%EF%BC%88%E4%B8%80%EF%BC%89/"/>
+    <id>https://liu620.github.io/2025/06/19/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3kafka-%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E4%B8%8E%E5%AE%9E%E6%88%98%E7%AF%87%E3%80%90%E5%B9%B2%E7%9A%84%E8%A6%81%E5%91%BD%E7%B3%BB%E5%88%97%E3%80%91%EF%BC%88%E4%B8%80%EF%BC%89/</id>
+    <published>2025-06-19T14:18:08.000Z</published>
+    <updated>2025-06-29T13:31:52.368Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;&lt;img src=&quot;https://liual-image.oss-cn-chengdu.aliyuncs.com/uPic/image-20250619201202850.png&quot;&gt;&lt;/p&gt;
+&lt;h1 id=&quot;1-开篇&quot;&gt;&lt;a href=&quot;#1-开篇&quot;</summary>
+        
+      
+    
+    
+    
+    <category term="消息队列" scheme="https://liu620.github.io/categories/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>有关于技术人的成长我想说一下</title>
+    <link href="https://liu620.github.io/2025/06/14/%E6%9C%89%E5%85%B3%E4%BA%8E%E6%8A%80%E6%9C%AF%E4%BA%BA%E7%9A%84%E6%88%90%E9%95%BF%E6%88%91%E6%83%B3%E8%AF%B4%E4%B8%80%E4%B8%8B/"/>
+    <id>https://liu620.github.io/2025/06/14/%E6%9C%89%E5%85%B3%E4%BA%8E%E6%8A%80%E6%9C%AF%E4%BA%BA%E7%9A%84%E6%88%90%E9%95%BF%E6%88%91%E6%83%B3%E8%AF%B4%E4%B8%80%E4%B8%8B/</id>
+    <published>2025-06-14T16:18:30.000Z</published>
+    <updated>2025-06-29T13:31:52.367Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;&lt;img src=&quot;https://liual-image.oss-cn-chengdu.aliyuncs.com/uPic/image-20250614175522862.png&quot;&gt;&lt;/p&gt;
+&lt;h1 id=&quot;一、技术人面临的什么&quot;&gt;&lt;a</summary>
+        
+      
+    
+    
+    
+    <category term="思考" scheme="https://liu620.github.io/categories/%E6%80%9D%E8%80%83/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>基于索引增强(RAG)下的开发理论及总结</title>
+    <link href="https://liu620.github.io/2025/06/09/%E5%9F%BA%E4%BA%8E%E7%B4%A2%E5%BC%95%E5%A2%9E%E5%BC%BA%E4%B8%8B%E7%9A%84RAG%E5%BC%80%E5%8F%91%E7%90%86%E8%AE%BA%E6%80%BB%E7%BB%93/"/>
+    <id>https://liu620.github.io/2025/06/09/%E5%9F%BA%E4%BA%8E%E7%B4%A2%E5%BC%95%E5%A2%9E%E5%BC%BA%E4%B8%8B%E7%9A%84RAG%E5%BC%80%E5%8F%91%E7%90%86%E8%AE%BA%E6%80%BB%E7%BB%93/</id>
+    <published>2025-06-09T18:26:49.000Z</published>
+    <updated>2025-06-29T13:31:52.367Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;&lt;img src=&quot;https://liual-image.oss-cn-chengdu.aliyuncs.com/uPic/image-20250609183310661.png&quot; alt=&quot;image-20250609183310661&quot;&gt;&lt;/p&gt;
+&lt;h1</summary>
+        
+      
+    
+    
+    
+    <category term="AI学习" scheme="https://liu620.github.io/categories/AI%E5%AD%A6%E4%B9%A0/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>redis 8.0新版本发布</title>
+    <link href="https://liu620.github.io/2025/06/08/redis%208.0%E6%96%B0%E7%89%88%E6%9C%AC%E5%8F%91%E5%B8%83/"/>
+    <id>https://liu620.github.io/2025/06/08/redis%208.0%E6%96%B0%E7%89%88%E6%9C%AC%E5%8F%91%E5%B8%83/</id>
+    <published>2025-06-08T14:36:57.000Z</published>
+    <updated>2025-06-29T13:31:52.367Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;&lt;img src=&quot;https://liual-image.oss-cn-chengdu.aliyuncs.com/uPic/%E9%A2%84%E8%A7%88-2025-06-08-jL3b7QXt@2x.png&quot;</summary>
+        
+      
+    
+    
+    
+    <category term="新闻" scheme="https://liu620.github.io/categories/%E6%96%B0%E9%97%BB/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>LangChain框架初探-基础及实践篇</title>
+    <link href="https://liu620.github.io/2025/05/22/LangChain%E6%A1%86%E6%9E%B6%E5%88%9D%E6%8E%A2-%E5%9F%BA%E7%A1%80%E7%AF%87%E5%AE%9E%E8%B7%B5%E7%AF%87/"/>
+    <id>https://liu620.github.io/2025/05/22/LangChain%E6%A1%86%E6%9E%B6%E5%88%9D%E6%8E%A2-%E5%9F%BA%E7%A1%80%E7%AF%87%E5%AE%9E%E8%B7%B5%E7%AF%87/</id>
+    <published>2025-05-22T18:35:08.000Z</published>
+    <updated>2025-06-29T13:31:52.366Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h1 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h1&gt;&lt;p&gt;&lt;code&gt;LangChain&lt;/code&gt;是大语言模型应用快速搭建的框架，目前官网提出了Python和JS版本（&lt;a</summary>
+        
+      
+    
+    
+    
+    <category term="AI学习" scheme="https://liu620.github.io/categories/AI%E5%AD%A6%E4%B9%A0/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>高斯数据库使用手册</title>
+    <link href="https://liu620.github.io/2024/07/21/%E9%AB%98%E6%96%AF%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BD%BF%E7%94%A8%E6%89%8B%E5%86%8C/"/>
+    <id>https://liu620.github.io/2024/07/21/%E9%AB%98%E6%96%AF%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BD%BF%E7%94%A8%E6%89%8B%E5%86%8C/</id>
+    <published>2024-07-21T23:41:27.000Z</published>
+    <updated>2025-06-29T13:31:52.368Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h1 id=&quot;高斯数据库使用手册&quot;&gt;&lt;a href=&quot;#高斯数据库使用手册&quot; class=&quot;headerlink&quot; title=&quot;高斯数据库使用手册&quot;&gt;&lt;/a&gt;高斯数据库使用手册&lt;/h1&gt;&lt;h2 id=&quot;1-简述&quot;&gt;&lt;a href=&quot;#1-简述&quot;</summary>
+        
+      
+    
+    
+    
+    <category term="随笔" scheme="https://liu620.github.io/categories/%E9%9A%8F%E7%AC%94/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>终于从甲流的魔爪中逃了出来</title>
+    <link href="https://liu620.github.io/2024/03/02/%E7%BB%88%E4%BA%8E%E4%BB%8E%E7%94%B2%E6%B5%81%E7%9A%84%E9%AD%94%E7%88%AA%E4%B8%AD%E9%80%83%E4%BA%86%E5%87%BA%E6%9D%A5/"/>
+    <id>https://liu620.github.io/2024/03/02/%E7%BB%88%E4%BA%8E%E4%BB%8E%E7%94%B2%E6%B5%81%E7%9A%84%E9%AD%94%E7%88%AA%E4%B8%AD%E9%80%83%E4%BA%86%E5%87%BA%E6%9D%A5/</id>
+    <published>2024-03-02T11:07:10.000Z</published>
+    <updated>2025-06-29T13:31:52.368Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;过年期间一直在忙，过年之后又得了一场大病，现在终于能坐下来写写博客了。。。&lt;/p&gt;
+&lt;h1 id=&quot;1、我经历了些什么&quot;&gt;&lt;a href=&quot;#1、我经历了些什么&quot; class=&quot;headerlink&quot;</summary>
+        
+      
+    
+    
+    
+    <category term="杂记" scheme="https://liu620.github.io/categories/%E6%9D%82%E8%AE%B0/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>Alfred Workflow教程</title>
+    <link href="https://liu620.github.io/2024/02/07/Alfred%20Workflow%E6%95%99%E7%A8%8B/"/>
+    <id>https://liu620.github.io/2024/02/07/Alfred%20Workflow%E6%95%99%E7%A8%8B/</id>
+    <published>2024-02-07T22:01:10.000Z</published>
+    <updated>2025-06-29T13:31:52.365Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;&lt;strong&gt;Ask: 为啥要做这样一篇文章？&lt;/strong&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;网上很少有这方面的教程，一方面是现在Alfred Workflow有自己的应用市场，比如Alfred</summary>
+        
+      
+    
+    
+    
+    <category term="杂记" scheme="https://liu620.github.io/categories/%E6%9D%82%E8%AE%B0/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>那些年我们打过的工（一）</title>
+    <link href="https://liu620.github.io/2024/02/04/%E8%BF%99%E4%BA%9B%E5%B9%B4%E6%88%91%E4%BB%AC%E6%89%93%E8%BF%87%E7%9A%84%E5%B7%A5/"/>
+    <id>https://liu620.github.io/2024/02/04/%E8%BF%99%E4%BA%9B%E5%B9%B4%E6%88%91%E4%BB%AC%E6%89%93%E8%BF%87%E7%9A%84%E5%B7%A5/</id>
+    <published>2024-02-04T20:51:08.000Z</published>
+    <updated>2025-06-29T13:31:52.368Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h1 id=&quot;BO1毕业前&quot;&gt;&lt;a href=&quot;#BO1毕业前&quot; class=&quot;headerlink&quot;</summary>
+        
+      
+    
+    
+    
+    <category term="杂记" scheme="https://liu620.github.io/categories/%E6%9D%82%E8%AE%B0/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>字符编码笔记</title>
+    <link href="https://liu620.github.io/2024/02/03/%E5%AD%97%E7%AC%A6%E7%BC%96%E7%A0%81%E7%AC%94%E8%AE%B0/"/>
+    <id>https://liu620.github.io/2024/02/03/%E5%AD%97%E7%AC%A6%E7%BC%96%E7%A0%81%E7%AC%94%E8%AE%B0/</id>
+    <published>2024-02-03T21:26:00.000Z</published>
+    <updated>2025-06-29T13:31:52.367Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;&lt;img src=&quot;https://logflies.oss-cn-chengdu.aliyuncs.com/uPic/4c05afb781104475bea3ef5a6cc212a1.webp&quot;</summary>
+        
+      
+    
+    
+    
+    <category term="思考" scheme="https://liu620.github.io/categories/%E6%80%9D%E8%80%83/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>关于发烧的要点</title>
+    <link href="https://liu620.github.io/2024/02/01/%E5%85%B3%E4%BA%8E%E5%8F%91%E7%83%A7%E7%9A%84%E8%A6%81%E7%82%B9/"/>
+    <id>https://liu620.github.io/2024/02/01/%E5%85%B3%E4%BA%8E%E5%8F%91%E7%83%A7%E7%9A%84%E8%A6%81%E7%82%B9/</id>
+    <published>2024-02-01T23:41:27.000Z</published>
+    <updated>2025-06-29T13:31:52.367Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;&lt;img src=&quot;https://logflies.oss-cn-chengdu.aliyuncs.com/uPic/u=554504066,4144554805&amp;fm=253&amp;fmt=auto&amp;app=120&amp;f=JPEG.webp&quot;</summary>
+        
+      
+    
+    
+    
+    <category term="随笔" scheme="https://liu620.github.io/categories/%E9%9A%8F%E7%AC%94/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>Python从零开始(持续更新)</title>
+    <link href="https://liu620.github.io/2024/01/27/Python%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B/"/>
+    <id>https://liu620.github.io/2024/01/27/Python%E4%BB%8E%E9%9B%B6%E5%BC%80%E5%A7%8B/</id>
+    <published>2024-01-27T14:42:28.000Z</published>
+    <updated>2025-06-29T13:31:52.366Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h1 id=&quot;1-Python简介&quot;&gt;&lt;a href=&quot;#1-Python简介&quot; class=&quot;headerlink&quot; title=&quot;1 Python简介&quot;&gt;&lt;/a&gt;1 Python简介&lt;/h1&gt;&lt;p&gt;Python是著名的龟叔Guido van</summary>
+        
+      
+    
+    
+    
+    <category term="python" scheme="https://liu620.github.io/categories/python/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>java字节码编程</title>
+    <link href="https://liu620.github.io/2023/03/17/java%E5%AD%97%E8%8A%82%E7%A0%81%E7%BC%96%E7%A8%8B/"/>
+    <id>https://liu620.github.io/2023/03/17/java%E5%AD%97%E8%8A%82%E7%A0%81%E7%BC%96%E7%A8%8B/</id>
+    <published>2023-03-17T09:43:13.000Z</published>
+    <updated>2025-06-29T13:31:52.367Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;&lt;img src=&quot;https://620image.oss-rg-china-mainland.aliyuncs.com/java%E5%AD%97%E8%8A%82%E7%A0%81%E7%BC%96%E7%A8%8B.png&quot;</summary>
+        
+      
+    
+    
+    
+    <category term="java" scheme="https://liu620.github.io/categories/java/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>关于系统监控的想法和实施（一）：数据监控</title>
+    <link href="https://liu620.github.io/2023/02/06/%E5%85%B3%E4%BA%8E%E7%B3%BB%E7%BB%9F%E7%9B%91%E6%8E%A7%E7%9A%84%E6%83%B3%E6%B3%95%E5%92%8C%E5%AE%9E%E6%96%BD%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E6%95%B0%E6%8D%AE%E7%9B%91%E6%8E%A7/"/>
+    <id>https://liu620.github.io/2023/02/06/%E5%85%B3%E4%BA%8E%E7%B3%BB%E7%BB%9F%E7%9B%91%E6%8E%A7%E7%9A%84%E6%83%B3%E6%B3%95%E5%92%8C%E5%AE%9E%E6%96%BD%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E6%95%B0%E6%8D%AE%E7%9B%91%E6%8E%A7/</id>
+    <published>2023-02-06T18:35:31.000Z</published>
+    <updated>2025-06-29T13:31:52.367Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;p&gt;​	大家好，我是爱吃里脊，下面由我来讨论下监控的想法。提到监控，对于维护系统至关重要，对发现问题，解决问题起着决定性的作用。&lt;br&gt;我们来先来进行整体拆解，一个监控系统包含三个主体：数据采集，数据处理，数据展示。这次我们先来了解数据采集。&lt;br&gt;首先要做监控系统首先得有一个</summary>
+        
+      
+    
+    
+    
+    <category term="思考" scheme="https://liu620.github.io/categories/%E6%80%9D%E8%80%83/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>git常用命令行</title>
+    <link href="https://liu620.github.io/2022/11/17/git%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E8%A1%8C/"/>
+    <id>https://liu620.github.io/2022/11/17/git%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E8%A1%8C/</id>
+    <published>2022-11-17T12:00:00.000Z</published>
+    <updated>2025-06-29T13:31:52.367Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h1 id=&quot;Git-Tips&quot;&gt;&lt;a href=&quot;#Git-Tips&quot; class=&quot;headerlink&quot; title=&quot;Git Tips&quot;&gt;&lt;/a&gt;Git Tips&lt;/h1&gt;&lt;h2 id=&quot;安装卸载&quot;&gt;&lt;a href=&quot;#安装卸载&quot; class=&quot;headerlink&quot;</summary>
+        
+      
+    
+    
+    
+    <category term="命令行" scheme="https://liu620.github.io/categories/%E5%91%BD%E4%BB%A4%E8%A1%8C/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>总结JVM参数使用手则</title>
+    <link href="https://liu620.github.io/2022/11/17/%E6%80%BB%E7%BB%93JVM%E5%8F%82%E6%95%B0%E4%BD%BF%E7%94%A8%E6%89%8B%E5%88%99/"/>
+    <id>https://liu620.github.io/2022/11/17/%E6%80%BB%E7%BB%93JVM%E5%8F%82%E6%95%B0%E4%BD%BF%E7%94%A8%E6%89%8B%E5%88%99/</id>
+    <published>2022-11-17T12:00:00.000Z</published>
+    <updated>2025-06-29T13:31:52.367Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h3 id=&quot;内存相关&quot;&gt;&lt;a href=&quot;#内存相关&quot; class=&quot;headerlink&quot; title=&quot;内存相关&quot;&gt;&lt;/a&gt;内存相关&lt;/h3&gt;&lt;p&gt;通过这些参数可以对JVM的内存分配做调整&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Xms&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt; </summary>
+        
+      
+    
+    
+    
+    <category term="java" scheme="https://liu620.github.io/categories/java/"/>
+    
+    
+  </entry>
+  
+  <entry>
+    <title>Netty 的 Channel、Promise、Pipeline 详解</title>
+    <link href="https://liu620.github.io/2022/10/26/Netty%20%E7%9A%84%20Channel%E3%80%81Promise%E3%80%81Pipeline%20%E8%AF%A6%E8%A7%A3/"/>
+    <id>https://liu620.github.io/2022/10/26/Netty%20%E7%9A%84%20Channel%E3%80%81Promise%E3%80%81Pipeline%20%E8%AF%A6%E8%A7%A3/</id>
+    <published>2022-10-26T21:00:00.000Z</published>
+    <updated>2025-06-29T13:31:52.366Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h1 id=&quot;Netty-Demo-示例&quot;&gt;&lt;a href=&quot;#Netty-Demo-示例&quot; class=&quot;headerlink&quot; title=&quot;Netty Demo 示例&quot;&gt;&lt;/a&gt;Netty Demo 示例&lt;/h1&gt;&lt;p&gt;首先通过一个示例来分析，创建一个</summary>
+        
+      
+    
+    
+    
+    <category term="组件&amp;中间件知识" scheme="https://liu620.github.io/categories/%E7%BB%84%E4%BB%B6-%E4%B8%AD%E9%97%B4%E4%BB%B6%E7%9F%A5%E8%AF%86/"/>
+    
+    
+  </entry>
+  
+</feed>
