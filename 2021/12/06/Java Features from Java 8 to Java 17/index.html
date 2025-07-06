@@ -1,0 +1,1012 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="alen">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="文章原文链接：https:&#x2F;&#x2F;reflectoring.io&#x2F;java-release-notes&#x2F;#diamond-syntax-with-inner-anonymous-classes A lot has changed in Java from its beginnings in 1995 until today. Java 8 was a revolutionary release tha">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java Features from Java 8 to Java 17">
+<meta property="og:url" content="https://liu620.github.io/2021/12/06/Java%20Features%20from%20Java%208%20to%20Java%2017/index.html">
+<meta property="og:site_name" content="Ali’s blog">
+<meta property="og:description" content="文章原文链接：https:&#x2F;&#x2F;reflectoring.io&#x2F;java-release-notes&#x2F;#diamond-syntax-with-inner-anonymous-classes A lot has changed in Java from its beginnings in 1995 until today. Java 8 was a revolutionary release tha">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://liu620.github.io/assets/img/posts/java-release-notes/package-structure.png">
+<meta property="article:published_time" content="2021-12-06T21:00:00.000Z">
+<meta property="article:modified_time" content="2025-07-06T14:39:14.509Z">
+<meta property="article:author" content="alen">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://liu620.github.io/assets/img/posts/java-release-notes/package-structure.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>Java Features from Java 8 to Java 17 - Ali’s blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"liu620.github.io","root":"/","version":"1.9.5","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"01dbd6ec77a591910f5678148a605740","google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+    <!-- Baidu Analytics -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?01dbd6ec77a591910f5678148a605740";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+      }
+    </script>
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="Ali’s blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Ali&#39;s blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Java Features from Java 8 to Java 17"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2021-12-06 21:00" pubdate>
+          2021年12月6日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          27k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          226 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">Java Features from Java 8 to Java 17</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>文章原文链接：<a target="_blank" rel="noopener" href="https://reflectoring.io/java-release-notes/#diamond-syntax-with-inner-anonymous-classes">https://reflectoring.io/java-release-notes/#diamond-syntax-with-inner-anonymous-classes</a></p>
+<p>A lot has changed in Java from its beginnings in 1995 until today. Java 8 was a revolutionary release that put Java back on the pedestal of the best programming languages.</p>
+<p>We will go through most of the changes in the Java language that happened from Java 8 in 2014 until today. We will try to be as brief as possible on every feature. The intention is to have <strong>a reference for all features between Java 8 and Java 17 inclusively</strong>.</p>
+<h2 id="Code-Example"><a href="#Code-Example" class="headerlink" title="Code Example"></a>Code Example</h2><p>This article is accompanied by a working code example <a target="_blank" rel="noopener" href="https://github.com/thombergs/code-examples/tree/master/core-java/versions">on GitHub</a>.</p>
+<h2 id="Java-8"><a href="#Java-8" class="headerlink" title="Java 8"></a>Java 8</h2><p>The main changes of the Java 8 release were these:</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://reflectoring.io/java-release-notes/#lambda-expressions-and-stream-api">Lambda Expression and Stream API</a></li>
+<li><a target="_blank" rel="noopener" href="https://reflectoring.io/java-release-notes/#method-reference">Method Reference</a></li>
+<li><a target="_blank" rel="noopener" href="https://reflectoring.io/java-release-notes/#default-methods">Default Methods</a></li>
+<li><a target="_blank" rel="noopener" href="https://reflectoring.io/java-release-notes/#type-annotations">Type Annotations</a></li>
+<li><a target="_blank" rel="noopener" href="https://reflectoring.io/java-release-notes/#repeating-annotations">Repeating Annotations</a></li>
+<li><a target="_blank" rel="noopener" href="https://reflectoring.io/java-release-notes/#method-parameter-reflection">Method Parameter Reflection</a></li>
+</ul>
+<h3 id="Lambda-Expressions-and-Stream-API"><a href="#Lambda-Expressions-and-Stream-API" class="headerlink" title="Lambda Expressions and Stream API"></a>Lambda Expressions and Stream API</h3><p>Java was always known for having a lot of boilerplate code. With the release of Java 8, this statement became a little less valid. The stream API and lambda expressions are the new features that move us closer to functional programming.</p>
+<p>In our examples, we will see how we use lambdas and streams in the different scenarios.</p>
+<h4 id="The-World-Before-Lambda-Expressions"><a href="#The-World-Before-Lambda-Expressions" class="headerlink" title="The World Before Lambda Expressions"></a>The World Before Lambda Expressions</h4><p>We own a car dealership business. To discard all the paperwork, we want to create a piece of software that finds all currently available cars that have run less than 50,000 km.</p>
+<p>Let us take a look at how we would implement a function for something like this in a naive way:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">LambdaExpressions</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> List&lt;Car&gt; <span class="hljs-title function_">findCarsOldWay</span><span class="hljs-params">(List&lt;Car&gt; cars)</span> &#123;<br>        List&lt;Car&gt; selectedCars = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayList</span>&lt;&gt;();<br>        <span class="hljs-keyword">for</span> (Car car : cars) &#123;<br>            <span class="hljs-keyword">if</span> (car.kilometers &lt; <span class="hljs-number">50000</span>) &#123;<br>                selectedCars.add(car);<br>            &#125;<br>        &#125;<br>        <span class="hljs-keyword">return</span> selectedCars;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>To implement this, we are creating a static function that accepts a <code>List</code> of cars. It should return a filtered list according to a specified condition.</p>
+<h4 id="Using-a-Stream-and-a-Lambda-Expression"><a href="#Using-a-Stream-and-a-Lambda-Expression" class="headerlink" title="Using a Stream and a Lambda Expression"></a>Using a Stream and a Lambda Expression</h4><p>We have the same problem as in the <a target="_blank" rel="noopener" href="https://reflectoring.io/java-release-notes/#the-world-before-lambda-expressions">previous example</a>.</p>
+<p>Our client wants to find all cars with the same criteria.</p>
+<p>Let us see a solution where we used the stream API and lambda expression:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">LambdaExpressions</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> List&lt;Car&gt; <span class="hljs-title function_">findCarsUsingLambda</span><span class="hljs-params">(List&lt;Car&gt; cars)</span> &#123;<br>        <span class="hljs-keyword">return</span> cars.stream().filter(car -&gt; car.kilometers &lt; <span class="hljs-number">50000</span>)<br>                .collect(Collectors.toList());<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>We need to transfer the list of cars into a stream by calling the <code>stream()</code> method. Inside the <code>filter()</code> method we are setting our condition. We are evaluating every entry against the desired condition. We are keeping only those entries that have less than 50,000 kilometers. The last thing that we need to do is to wrap it up into a list.</p>
+<p>More about lambda expressions can be found in the <a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html">docs</a>.</p>
+<h3 id="Method-Reference"><a href="#Method-Reference" class="headerlink" title="Method Reference"></a>Method Reference</h3><h4 id="Without-Method-Reference"><a href="#Without-Method-Reference" class="headerlink" title="Without Method Reference"></a>Without Method Reference</h4><p>We still own a car dealership shop, and we want to print out all the cars in the shop. For that, we will use a method reference.</p>
+<p>A method reference allows us to call functions in classes using a special kind of syntax <code>::</code>. There are four kinds of method references:</p>
+<ul>
+<li>Reference to a static method</li>
+<li>Reference to an instance method on a object</li>
+<li>Reference to an instance method on a type</li>
+<li>Reference to a constructor</li>
+</ul>
+<p>Let us see how to do it using the standard method call:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">MethodReference</span> &#123;<br>    List&lt;String&gt; withoutMethodReference =<br>            cars.stream().map(car -&gt; car.toString())<br>                    .collect(Collectors.toList());<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>We are using a lambda expression to call the <code>toString()</code> method on each car.</p>
+<h4 id="Using-a-Method-Reference"><a href="#Using-a-Method-Reference" class="headerlink" title="Using a Method Reference"></a>Using a Method Reference</h4><p>Now, let us see how to use a method reference in the same situation:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">MethodReference</span> &#123;<br>    List&lt;String&gt; methodReference = cars.stream().map(Car::toString)<br>            .collect(Collectors.toList());<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>We are, again, using a lambda expression, but now we call the <code>toString()</code> method by method reference. We can see how it is more concise and easier to read.</p>
+<p>To read more about method reference please look at the <a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html">docs</a>.</p>
+<h3 id="Default-Methods"><a href="#Default-Methods" class="headerlink" title="Default Methods"></a>Default Methods</h3><p>Let us imagine that we have a simple method <code>log(String message)</code> that prints log messages on invocation. We realized that we want to provide timestamps to messages so that logs are easily searchable. We don’t want our clients to break after we introduce this change. We will do this using a default method implementation on an interface.</p>
+<p>Default method implementation is the feature that allows us to create a fallback implementation of an interface method.</p>
+<h4 id="Use-Case"><a href="#Use-Case" class="headerlink" title="Use Case"></a>Use Case</h4><p>Let us see how our contract looks:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">DefaultMethods</span> &#123;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title class_">Logging</span> &#123;<br>        <span class="hljs-keyword">void</span> <span class="hljs-title function_">log</span><span class="hljs-params">(String message)</span>;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">LoggingImplementation</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">Logging</span> &#123;<br>        <span class="hljs-meta">@Override</span><br>        <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">log</span><span class="hljs-params">(String message)</span> &#123;<br>            System.out.println(message);<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>We are creating a simple interface with just one method and implementing it in <code>LoggingImplementation</code> class.</p>
+<h4 id="Adding-New-Method"><a href="#Adding-New-Method" class="headerlink" title="Adding New Method"></a>Adding New Method</h4><p>We will add new method inside the interface. The method accepts the second argument called date that represents timestamp.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">DefaultMethods</span> &#123;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title class_">Logging</span> &#123;<br>        <span class="hljs-keyword">void</span> <span class="hljs-title function_">log</span><span class="hljs-params">(String message)</span>;<br>        <br>        <span class="hljs-keyword">void</span> <span class="hljs-title function_">log</span><span class="hljs-params">(String message, Date date)</span>;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>We are adding a new method but not implementing it inside all client classes. The compiler will fail with exception:</p>
+<figure class="highlight oxygene"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs oxygene"><span class="hljs-keyword">Class</span> <span class="hljs-string">&#x27;LoggingImplementation&#x27;</span> must either be declared <span class="hljs-keyword">abstract</span> <br><span class="hljs-keyword">or</span> implement <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">method</span> &#x27;<span class="hljs-title function_">log</span><span class="hljs-params">(String, Date)</span>&#x27; <span class="hljs-title function_">in</span> &#x27;<span class="hljs-title function_">Logging</span>&#x27;`.<br></code></pre></td></tr></table></figure>
+
+<h4 id="Using-Default-Methods"><a href="#Using-Default-Methods" class="headerlink" title="Using Default Methods"></a>Using Default Methods</h4><p>After adding a new method inside the interface, our compiler threw exceptions. We are going to solve this using default method implementation for the new method.</p>
+<p>Let us look at how to create a default method implementation:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">DefaultMethods</span> &#123;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title class_">Logging</span> &#123;<br>        <span class="hljs-keyword">void</span> <span class="hljs-title function_">log</span><span class="hljs-params">(String message)</span>;<br><br>        <span class="hljs-keyword">default</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">log</span><span class="hljs-params">(String message, Date date)</span> &#123;<br>            System.out.println(date.toString() + <span class="hljs-string">&quot;: &quot;</span> + message);<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>Putting the <code>default</code> keyword allows us to add the implementation of the method inside the interface. Now, our <code>LoggingImplementation</code> class does not fail with a compiler error even though we didn’t implement this new method inside of it.</p>
+<p>To read more about default methods please refer to the <a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/tutorial/java/IandI/defaultmethods.html">docs</a>.</p>
+<h3 id="Type-Annotations"><a href="#Type-Annotations" class="headerlink" title="Type Annotations"></a>Type Annotations</h3><p>Type annotations are one more feature introduced in Java 8. Even though we had annotations available before, now we can use them wherever we use a type. This means that we can use them on:</p>
+<ul>
+<li>a local variable definition</li>
+<li>constructor calls</li>
+<li>type casting</li>
+<li>generics</li>
+<li>throw clauses and more</li>
+</ul>
+<p>Tools like IDEs can then read these annotations and show warnings or errors based on the annotations.</p>
+<h4 id="Local-Variable-Definition"><a href="#Local-Variable-Definition" class="headerlink" title="Local Variable Definition"></a>Local Variable Definition</h4><p>Let us see how to ensure that our local variable doesn’t end up as a <code>null</code> value:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">TypeAnnotations</span> &#123;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        <span class="hljs-meta">@NotNull</span> <span class="hljs-type">String</span> <span class="hljs-variable">userName</span> <span class="hljs-operator">=</span> args[<span class="hljs-number">0</span>];<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>We are using annotation on the local variable definition here. A compile-time annotation processor could now read the <code>@NotNull</code> annotation and throw an error when the string is null.</p>
+<h4 id="Constructor-Call"><a href="#Constructor-Call" class="headerlink" title="Constructor Call"></a>Constructor Call</h4><p>We want to make sure that we cannot create an empty <code>ArrayList</code>:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">TypeAnnotations</span> &#123;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        List&lt;String&gt; request =<br>                <span class="hljs-keyword">new</span> <span class="hljs-meta">@NotEmpty</span> ArrayList&lt;&gt;(Arrays.stream(args).collect(<br>                        Collectors.toList()));<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>This is the perfect example of how to use type annotations on a constructor. Again, an annotation processor can evaluate the annotation and check if the array list is not empty.</p>
+<h4 id="Generic-Type"><a href="#Generic-Type" class="headerlink" title="Generic Type"></a>Generic Type</h4><p>One of our requirements is that each email has to be in a format <code>&lt;name&gt;@&lt;company&gt;.com</code>. If we use type annotations, we can do it easily:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">TypeAnnotations</span> &#123;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        List&lt;<span class="hljs-meta">@Email</span> String&gt; emails;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>This is a definition of a list of email addresses. We use <code>@Email</code> annotation that ensures that every record inside this list is in the desired format.</p>
+<p>A tool could use reflection to evaluate the annotation and check that each of the elements in the list is a valid email address.</p>
+<p>For more information about type annotations please refer to the <a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/tutorial/java/annotations/type_annotations.html">docs</a>.</p>
+<h3 id="Repeating-Annotations"><a href="#Repeating-Annotations" class="headerlink" title="Repeating Annotations"></a>Repeating Annotations</h3><p>Let us imagine we have an application with fully implemented security. It has different levels of authorization. Even though we implemented everything carefully, we want to make sure that we log every unauthorized action. On each unauthorized action, we are sending an email to the owner of the company and our security admin group email. Repeating annotations are our way to go on this example.</p>
+<p>Repeating annotations allows us to place multiple annotations on the same class.</p>
+<h4 id="Creating-a-Repeating-Annotation"><a href="#Creating-a-Repeating-Annotation" class="headerlink" title="Creating a Repeating Annotation"></a>Creating a Repeating Annotation</h4><p>For the <a target="_blank" rel="noopener" href="https://reflectoring.io/java-release-notes/#repeating-annotations">example</a>, we are going to create a repeating annotation called <code>@Notify</code>:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">RepeatingAnnotations</span> &#123;<br>    <br>    <span class="hljs-meta">@Repeatable(Notifications.class)</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-meta">@interface</span> Notify &#123;<br>        String <span class="hljs-title function_">email</span><span class="hljs-params">()</span>;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-meta">@interface</span> Notifications &#123;<br>        Notify[] value();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>We create <code>@Notify</code> as a regular annotation, but we add the <code>@Repeatable</code> (meta-)annotation to it. Additionally, we have to create a “container” annotation <code>Notifications</code> that contains an array of <code>Notify</code> objects. An annotation processor can now get access to all repeating <code>Notify</code> annotations through the container annotation <code>Noifications</code>.</p>
+<p>Please note that this is a mock annotation just for demonstration purposes. This annotation will not send emails without an annotation processor that reads it and then sends emails.</p>
+<h4 id="Using-Repeating-Annotations"><a href="#Using-Repeating-Annotations" class="headerlink" title="Using Repeating Annotations"></a>Using Repeating Annotations</h4><p>We can add a repating annotation multiple times to the same construct:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Notify(email = &quot;admin@company.com&quot;)</span><br><span class="hljs-meta">@Notify(email = &quot;owner@company.com&quot;)</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">UserNotAllowedForThisActionException</span><br>        <span class="hljs-keyword">extends</span> <span class="hljs-title class_">RuntimeException</span> &#123;<br>    <span class="hljs-keyword">final</span> String user;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">UserNotAllowedForThisActionException</span><span class="hljs-params">(String user)</span> &#123;<br>        <span class="hljs-built_in">this</span>.user = user;<br><br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>We have our custom exception class that we will throw whenever a user tries to do something that the user is not allowed. Our annotations to this class say that we want to notify two emails when code throws this exception.</p>
+<p>To read more about repeating annotations please refer to the <a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/tutorial/java/annotations/repeating.html">docs</a>.</p>
+<h2 id="Java-9"><a href="#Java-9" class="headerlink" title="Java 9"></a>Java 9</h2><p>Java 9 introduced these main features:</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://reflectoring.io/java-release-notes/#java-module-system">Java Module System</a></li>
+<li><a target="_blank" rel="noopener" href="https://reflectoring.io/java-release-notes/#try-with-resources">Try-with-resources</a></li>
+<li><a target="_blank" rel="noopener" href="https://reflectoring.io/java-release-notes/#diamond-syntax-with-inner-anonymous-classes">Diamond Syntax with Inner Anonymous Classes</a></li>
+<li><a target="_blank" rel="noopener" href="https://reflectoring.io/java-release-notes/#private-interface-methods">Private Interface Methods</a></li>
+</ul>
+<h3 id="Java-Module-System"><a href="#Java-Module-System" class="headerlink" title="Java Module System"></a>Java Module System</h3><p>A module is a group of packages, their dependencies, and resources. It provides a broader set of functionalities than packages.</p>
+<p>When creating the new module, we need to provide several attributes:</p>
+<ul>
+<li>Name</li>
+<li>Dependencies</li>
+<li>Public Packages - by default, all packages are module private</li>
+<li>Services Offered</li>
+<li>Services Consumed</li>
+<li>Reflection Permissions</li>
+</ul>
+<p>Without going into many details, let us create our first module. Inside our example, we will show several options and keywords that one can use when creating a module.</p>
+<h4 id="Creating-Modules-Inside-IntelliJ"><a href="#Creating-Modules-Inside-IntelliJ" class="headerlink" title="Creating Modules Inside IntelliJ"></a>Creating Modules Inside IntelliJ</h4><p>First, we will go with a simple example. We will build a Hello World application where we print “Hello” from one module, and we call the second module to print “World!”.</p>
+<p>Since I am working in the IntelliJ IDEA there is something that we need to understand first. IntelliJ IDEA has the concept of modules. For it to work, each Java module has to correspond to one IntelliJ module.</p>
+<p><img src="/../assets/img/posts/java-release-notes/package-structure.png" srcset="/img/loading.gif" lazyload alt="Package structure!" title="Package structure"></p>
+<p>We have two modules: <code>hello.module</code> and <code>world.module</code>. They correspond to <code>hello</code> and <code>world</code> IntelliJ modules, respectively. Inside each of them, we have created the <code>module-info.java</code> file. This file defines our Java module. Inside, we declare which packages we need to export and on which modules we are dependent.</p>
+<h4 id="Defining-our-First-Module"><a href="#Defining-our-First-Module" class="headerlink" title="Defining our First Module"></a>Defining our First Module</h4><p>We are using the <code>hello</code> module to print the word: “Hello”. Inside, we call the method inside the <code>world</code> module, which will print “World !”. The first thing that we need to do is to declare export of the package containing our <code>World.class</code> inside <code>module-info.java</code>:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">module</span> world.<span class="hljs-keyword">module</span> &#123;<br>    <span class="hljs-keyword">exports</span> com.reflectoring.io.app.world;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>We use the keyword <code>module</code> with the module name to reference the module.</p>
+<p>The next keyword that we use is <code>exports</code>. It tells the module system that we are making our <code>com.reflectoring.io.app.world</code> package visible outside of our module.</p>
+<p>There are several other keywords can be used:</p>
+<ul>
+<li>requires</li>
+<li>requires transitive</li>
+<li>exports to</li>
+<li>uses</li>
+<li>provides with</li>
+<li>open</li>
+<li>opens</li>
+<li>opens to</li>
+</ul>
+<p>Out of these we will show only <code>requires</code> declaration. Others can be found in the <a target="_blank" rel="noopener" href="https://www.oracle.com/corporate/features/understanding-java-9-modules.html">docs</a>.</p>
+<h4 id="Defining-our-Second-Module"><a href="#Defining-our-Second-Module" class="headerlink" title="Defining our Second Module"></a>Defining our Second Module</h4><p>After we created and exported the <code>world</code> module, we can proceed with creating the <code>hello</code> module:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">module</span> hello.<span class="hljs-keyword">module</span> &#123;<br>    <span class="hljs-keyword">requires</span> world.<span class="hljs-keyword">module</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>We define dependencies using <code>requires</code> keyword. We are referencing our newly created, <code>hello.module</code>. Packages that are not exported are, by default, module private and cannot be seen from outside of the module.</p>
+<p>To read more about the Java module system please refer to <a target="_blank" rel="noopener" href="https://openjdk.java.net/jeps/261">the docs</a></p>
+<h3 id="Try-with-resources"><a href="#Try-with-resources" class="headerlink" title="Try-with-resources"></a>Try-with-resources</h3><p>Try-with-resources is a feature that enables us to declare new autoclosable resources on a <code>try-catch</code> block. Declaring them inside a <code>try-catch</code> block tells the JVM to release them after the code has run. The only condition is that the declared resource implements an <code>Autoclosable</code> interface.</p>
+<h4 id="Closing-a-Resource-Manually"><a href="#Closing-a-Resource-Manually" class="headerlink" title="Closing a Resource Manually"></a>Closing a Resource Manually</h4><p>We want to read text using <code>BufferedReader</code>. <code>BufferedReader</code> is a closable resource, so we need to make sure that it is properly closed after use. Before Java 8 we would do it like this:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">TryWithResources</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        <span class="hljs-type">BufferedReader</span> <span class="hljs-variable">br</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">BufferedReader</span>(<br>                <span class="hljs-keyword">new</span> <span class="hljs-title class_">StringReader</span>(<span class="hljs-string">&quot;Hello world example!&quot;</span>));<br>        <span class="hljs-keyword">try</span> &#123;<br>            System.out.println(br.readLine());<br>        &#125; <span class="hljs-keyword">catch</span> (IOException e) &#123;<br>            e.printStackTrace();<br>        &#125; <span class="hljs-keyword">finally</span> &#123;<br>            <span class="hljs-keyword">try</span> &#123;<br>                br.close();<br>            &#125; <span class="hljs-keyword">catch</span> (IOException e) &#123;<br>                e.printStackTrace();<br>            &#125;<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>In <code>finally</code> block, we would call <code>close()</code>. The <code>finally</code> block ensures that the reader is always properly closed.</p>
+<h4 id="Closing-a-Resource-with-try-with-resources"><a href="#Closing-a-Resource-with-try-with-resources" class="headerlink" title="Closing a Resource with try-with-resources"></a>Closing a Resource with <code>try-with-resources</code></h4><p>Java 8 introduced the try-with-resource feature that enables us to declare our resource inside <code>try</code> definition. This will ensure that our closable is closed without using <code>finally</code>. Let us take a look at some example of using the <code>BufferedReader</code> to read string:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">TryWithResources</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        <span class="hljs-keyword">final</span> <span class="hljs-type">BufferedReader</span> <span class="hljs-variable">br3</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">BufferedReader</span>(<br>                <span class="hljs-keyword">new</span> <span class="hljs-title class_">StringReader</span>(<span class="hljs-string">&quot;Hello world example3!&quot;</span>));<br>        <span class="hljs-keyword">try</span> (<span class="hljs-type">BufferedReader</span> <span class="hljs-variable">reader</span> <span class="hljs-operator">=</span> br3) &#123;<br>            System.out.println(reader.readLine());<br>        &#125; <span class="hljs-keyword">catch</span> (IOException e) &#123;<br>            System.out.println(<span class="hljs-string">&quot;Error happened!&quot;</span>);<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>Inside the <code>try</code> definition, we are assigning our previously created reader to the new variable. Now we know that our reader will get closed every time.</p>
+<p>To read more about the try-with-resources feature please refer to the <a target="_blank" rel="noopener" href="https://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html">docs</a>.</p>
+<h3 id="Diamond-Syntax-with-Inner-Anonymous-Classes"><a href="#Diamond-Syntax-with-Inner-Anonymous-Classes" class="headerlink" title="Diamond Syntax with Inner Anonymous Classes"></a>Diamond Syntax with Inner Anonymous Classes</h3><p>Before Java 9 we couldn’t use a diamond operator inside the inner anonymous class.</p>
+<p>For our example, we will create the abstract class, <code>StringAppender</code>. The class has only one method that appends two strings with <code>-</code> between them. We will use the anonymous class for providing the implementation for the <code>append()</code> method:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">DiamondOperator</span> &#123;<br><br>    StringAppender&lt;String&gt; appending = <span class="hljs-keyword">new</span> <span class="hljs-title class_">StringAppender</span>&lt;&gt;() &#123;<br>        <span class="hljs-meta">@Override</span><br>        <span class="hljs-keyword">public</span> String <span class="hljs-title function_">append</span><span class="hljs-params">(String a, String b)</span> &#123;<br>            <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">StringBuilder</span>(a).append(<span class="hljs-string">&quot;-&quot;</span>).append(b).toString();<br>        &#125;<br>    &#125;;<br>    <br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">StringAppender</span>&lt;T&gt; &#123;<br>        <span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> T <span class="hljs-title function_">append</span><span class="hljs-params">(String a, String b)</span>;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>We use the diamond operator to omit type on the constructor call <code>new StringAppender&lt;&gt;()</code>. Since we are using Java 8, in this example we will get a compiler error:</p>
+<figure class="highlight n1ql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs n1ql">java: cannot <span class="hljs-keyword">infer</span> <span class="hljs-built_in">type</span> arguments <span class="hljs-keyword">for</span> <br>com.reflectoring.io.java9.DiamondOperator.StringAppender&lt;T&gt;<br><br>reason: <span class="hljs-string">&#x27;&lt;&gt;&#x27;</span> <span class="hljs-keyword">with</span> anonymous <span class="hljs-keyword">inner</span> classes <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> supported <span class="hljs-keyword">in</span> -source <span class="hljs-number">8</span><br>    (<span class="hljs-keyword">use</span> -source <span class="hljs-number">9</span> <span class="hljs-keyword">or</span> higher <span class="hljs-keyword">to</span> enable <span class="hljs-string">&#x27;&lt;&gt;&#x27;</span> <span class="hljs-keyword">with</span> anonymous <span class="hljs-keyword">inner</span> classes)<br></code></pre></td></tr></table></figure>
+
+<p>In Java 9, this compiler error is no longer happening.</p>
+<h3 id="Private-Interface-Methods"><a href="#Private-Interface-Methods" class="headerlink" title="Private Interface Methods"></a>Private Interface Methods</h3><p>We already mentioned how we use <a target="_blank" rel="noopener" href="https://reflectoring.io/java-release-notes/#default-methods">default methods</a> in interfaces.</p>
+<p>How do we split the implementation into several methods? When working with classes, we can achieve it using private methods. Could that be the solution in our case?</p>
+<p>As of Java 9, yes. We can create private methods inside our interfaces.</p>
+<h4 id="Usage-of-Private-Interface-Methods"><a href="#Usage-of-Private-Interface-Methods" class="headerlink" title="Usage of Private Interface Methods"></a>Usage of Private Interface Methods</h4><p>For our example, we want to print out a set of names.</p>
+<p>Interface containing this functionality had default method defined. We decided that we should if the client doesn’t provide the implementation, provide a set of predefined names that we read from the resource folder:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">PrivateInterfaceMethods</span> &#123;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        <span class="hljs-type">TestingNames</span> <span class="hljs-variable">names</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">TestingNames</span>();<br>        System.out.println(names.fetchInitialData());<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">TestingNames</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">NamesInterface</span> &#123;<br>        <span class="hljs-keyword">public</span> <span class="hljs-title function_">TestingNames</span><span class="hljs-params">()</span> &#123;<br>        &#125;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title class_">NamesInterface</span> &#123;<br>        <span class="hljs-keyword">default</span> List&lt;String&gt; <span class="hljs-title function_">fetchInitialData</span><span class="hljs-params">()</span> &#123;<br>            <span class="hljs-keyword">try</span> (<span class="hljs-type">BufferedReader</span> <span class="hljs-variable">br</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">BufferedReader</span>(<br>                    <span class="hljs-keyword">new</span> <span class="hljs-title class_">InputStreamReader</span>(<span class="hljs-built_in">this</span>.getClass()<br>                            .getResourceAsStream(<span class="hljs-string">&quot;/names.txt&quot;</span>)))) &#123;<br>                <span class="hljs-keyword">return</span> readNames(br);<br>            &#125; <span class="hljs-keyword">catch</span> (IOException e) &#123;<br>                e.printStackTrace();<br>                <span class="hljs-keyword">return</span> <span class="hljs-literal">null</span>;<br>            &#125;<br>        &#125;<br><br>        <span class="hljs-keyword">private</span> List&lt;String&gt; <span class="hljs-title function_">readNames</span><span class="hljs-params">(BufferedReader br)</span><br>                <span class="hljs-keyword">throws</span> IOException &#123;<br>            ArrayList&lt;String&gt; names = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayList</span>&lt;&gt;();<br>            String name;<br>            <span class="hljs-keyword">while</span> ((name = br.readLine()) != <span class="hljs-literal">null</span>) &#123;<br>                names.add(name);<br>            &#125;<br>            <span class="hljs-keyword">return</span> names;<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>We are using <code>BufferedReader</code> to read the file containing default names that we share with the client. To encapsulate our code and, possibly, make it reusable in other methods, we decided to move code for reading and saving names into a <code>List</code> to the separate method. This method is private and, now, we can use it anywhere inside our interface.</p>
+<p>As mentioned, the main benefit of this feature inside Java 9 is better encapsulation and reusability of the code.</p>
+<h2 id="Java-10"><a href="#Java-10" class="headerlink" title="Java 10"></a>Java 10</h2><h3 id="Local-Variable-Type-Inference"><a href="#Local-Variable-Type-Inference" class="headerlink" title="Local Variable Type Inference"></a>Local Variable Type Inference</h3><p>Java always needed explicit types on local variables.</p>
+<p>When writing and reading code, we always know which type we expect. On the other hand, a lot of the code is just types with no usability.</p>
+<p>The <code>var</code> type allows us to omit type from the left-hand side of our statements.</p>
+<h4 id="Old-Way"><a href="#Old-Way" class="headerlink" title="Old Way"></a>Old Way</h4><p>Let us look into the example here. We want to create small a set of people, put everything in one list and then go through that list in the for loop to print out their name and last name:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">LocalTypeVar</span> &#123;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">explicitTypes</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-type">Person</span> <span class="hljs-variable">Roland</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Person</span>(<span class="hljs-string">&quot;Roland&quot;</span>, <span class="hljs-string">&quot;Deschain&quot;</span>);<br>        <span class="hljs-type">Person</span> <span class="hljs-variable">Susan</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Person</span>(<span class="hljs-string">&quot;Susan&quot;</span>, <span class="hljs-string">&quot;Delgado&quot;</span>);<br>        <span class="hljs-type">Person</span> <span class="hljs-variable">Eddie</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Person</span>(<span class="hljs-string">&quot;Eddie&quot;</span>, <span class="hljs-string">&quot;Dean&quot;</span>);<br>        <span class="hljs-type">Person</span> <span class="hljs-variable">Detta</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Person</span>(<span class="hljs-string">&quot;Detta&quot;</span>, <span class="hljs-string">&quot;Walker&quot;</span>);<br>        <span class="hljs-type">Person</span> <span class="hljs-variable">Jake</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Person</span>(<span class="hljs-string">&quot;Jake&quot;</span>, <span class="hljs-string">&quot;Chambers&quot;</span>);<br><br>        List&lt;Person&gt; persons =<br>                List.of(Roland, Susan, Eddie, Detta, Jake);<br><br>        <span class="hljs-keyword">for</span> (Person person : persons) &#123;<br>            System.out.println(person.name + <span class="hljs-string">&quot; - &quot;</span> + person.lastname);<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>This is the type of code that we can see in most cases in Java. We use explicit types to make sure that we know what the method expects.</p>
+<h4 id="Implicit-Typing-with-var"><a href="#Implicit-Typing-with-var" class="headerlink" title="Implicit Typing with var"></a>Implicit Typing with <code>var</code></h4><p>Now, we will look into the same example, but using the <code>var</code> keyword that Java 10 introduced. We still want to create several person objects and put them in a list. After that, we will go through that list and print out the name of each person:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">LocalTypeVar</span> &#123;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">varTypes</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-type">var</span> <span class="hljs-variable">Roland</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Person</span>(<span class="hljs-string">&quot;Roland&quot;</span>, <span class="hljs-string">&quot;Deschain&quot;</span>);<br>        <span class="hljs-type">var</span> <span class="hljs-variable">Susan</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Person</span>(<span class="hljs-string">&quot;Susan&quot;</span>, <span class="hljs-string">&quot;Delgado&quot;</span>);<br>        <span class="hljs-type">var</span> <span class="hljs-variable">Eddie</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Person</span>(<span class="hljs-string">&quot;Eddie&quot;</span>, <span class="hljs-string">&quot;Dean&quot;</span>);<br>        <span class="hljs-type">var</span> <span class="hljs-variable">Detta</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Person</span>(<span class="hljs-string">&quot;Detta&quot;</span>, <span class="hljs-string">&quot;Walker&quot;</span>);<br>        <span class="hljs-type">var</span> <span class="hljs-variable">Jake</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Person</span>(<span class="hljs-string">&quot;Jake&quot;</span>, <span class="hljs-string">&quot;Chambers&quot;</span>);<br><br>        <span class="hljs-type">var</span> <span class="hljs-variable">persons</span> <span class="hljs-operator">=</span> List.of(Roland, Susan, Eddie, Detta, Jake);<br><br>        <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> person : persons) &#123;<br>            System.out.println(person.name + <span class="hljs-string">&quot; - &quot;</span> + person.lastname);<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>We can see some of the most typical examples of using <code>var</code> type on local variables. First, we use them for defining local variables. It can be a standalone object or even a list with the diamond operator.</p>
+<p>For more details about local type inference please visit <a target="_blank" rel="noopener" href="https://docs.oracle.com/en/java/javase/17/language/local-variable-type-inference.html">the docs</a>.</p>
+<h2 id="Java-11"><a href="#Java-11" class="headerlink" title="Java 11"></a>Java 11</h2><h3 id="Local-Variable-Type-in-Lambda-Expressions"><a href="#Local-Variable-Type-in-Lambda-Expressions" class="headerlink" title="Local Variable Type in Lambda Expressions"></a>Local Variable Type in Lambda Expressions</h3><p>Java 11 introduced an improvement to the previously mentioned <a target="_blank" rel="noopener" href="https://reflectoring.io/java-release-notes/#local-variable-type-inference">local type inference</a>. This allows us to use <code>var</code> inside lambda expressions.</p>
+<p>We will, again, create several persons, collect them into the list and filter out entries that don’t have an ‘a’ inside their name:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">LocalTypeVarLambda</span> &#123;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">explicitTypes</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-type">var</span> <span class="hljs-variable">Roland</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Person</span>(<span class="hljs-string">&quot;Roland&quot;</span>, <span class="hljs-string">&quot;Deschain&quot;</span>);<br>        <span class="hljs-type">var</span> <span class="hljs-variable">Susan</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Person</span>(<span class="hljs-string">&quot;Susan&quot;</span>, <span class="hljs-string">&quot;Delgado&quot;</span>);<br>        <span class="hljs-type">var</span> <span class="hljs-variable">Eddie</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Person</span>(<span class="hljs-string">&quot;Eddie&quot;</span>, <span class="hljs-string">&quot;Dean&quot;</span>);<br>        <span class="hljs-type">var</span> <span class="hljs-variable">Detta</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Person</span>(<span class="hljs-string">&quot;Detta&quot;</span>, <span class="hljs-string">&quot;Walker&quot;</span>);<br>        <span class="hljs-type">var</span> <span class="hljs-variable">Jake</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Person</span>(<span class="hljs-string">&quot;Jake&quot;</span>, <span class="hljs-string">&quot;Chambers&quot;</span>);<br><br>        <span class="hljs-type">var</span> <span class="hljs-variable">filteredPersons</span> <span class="hljs-operator">=</span><br>                List.of(Roland, Susan, Eddie, Detta, Jake)<br>                        .stream()<br>                        .filter((<span class="hljs-keyword">var</span> x) -&gt; x.name.contains(<span class="hljs-string">&quot;a&quot;</span>))<br>                        .collect(Collectors.toList());<br>        System.out.println(filteredPersons);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>Inside the <code>filter()</code> method we are using <code>var</code> to infer the type instead of explicitly mentioning the type.</p>
+<p>Please note that it doesn’t make a difference if we use <code>var</code> or type inference without it. It will work the same for both.</p>
+<h2 id="Java-14"><a href="#Java-14" class="headerlink" title="Java 14"></a>Java 14</h2><h3 id="Switch-Expressions"><a href="#Switch-Expressions" class="headerlink" title="Switch Expressions"></a>Switch Expressions</h3><p>Switch expressions allowed us to omit <code>break</code> calls inside every <code>case</code> block. It helps with the readability of the code and better understanding.</p>
+<p>In this section, we will see several ways of how to use switch expressions.</p>
+<h4 id="Old-Way-of-Switch-Statements"><a href="#Old-Way-of-Switch-Statements" class="headerlink" title="Old Way of Switch Statements"></a>Old Way of Switch Statements</h4><p>We have a method where a client provides the desired month, and we return the number of days inside that month.</p>
+<p>The first thing that comes to our mind is to build it with <code>switch-case</code> statements:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">SwitchExpression</span> &#123;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        <span class="hljs-type">int</span> <span class="hljs-variable">days</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>;<br>        <span class="hljs-type">Month</span> <span class="hljs-variable">month</span> <span class="hljs-operator">=</span> Month.APRIL;<br><br>        <span class="hljs-keyword">switch</span> (month) &#123;<br>            <span class="hljs-keyword">case</span> JANUARY, MARCH, MAY, JULY, AUGUST, OCTOBER, DECEMBER :<br>                days = <span class="hljs-number">31</span>;<br>                <span class="hljs-keyword">break</span>;<br>            <span class="hljs-keyword">case</span> FEBRUARY :<br>                days = <span class="hljs-number">28</span>;<br>                <span class="hljs-keyword">break</span>;<br>            <span class="hljs-keyword">case</span> APRIL, JUNE, SEPTEMBER, NOVEMBER :<br>                days = <span class="hljs-number">30</span>;<br>                <span class="hljs-keyword">break</span>;<br>            <span class="hljs-keyword">default</span>:<br>                <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">IllegalStateException</span>();<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>We need to make sure that we put a break statement inside our case code block. Failing it will result in checking on other conditions after we match the first one.</p>
+<h4 id="Using-Switch-Expressions"><a href="#Using-Switch-Expressions" class="headerlink" title="Using Switch Expressions"></a>Using Switch Expressions</h4><p>We will look into the same method as before. The user wants to send the month and get the number of days in that month:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">SwitchExpression</span> &#123;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        <span class="hljs-type">int</span> <span class="hljs-variable">days</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>;<br>        <span class="hljs-type">Month</span> <span class="hljs-variable">month</span> <span class="hljs-operator">=</span> Month.APRIL;<br><br>        days = <span class="hljs-keyword">switch</span> (month) &#123;<br>            <span class="hljs-keyword">case</span> JANUARY, MARCH, MAY, JULY, AUGUST, OCTOBER, DECEMBER -&gt; <span class="hljs-number">31</span>;<br>            <span class="hljs-keyword">case</span> FEBRUARY -&gt; <span class="hljs-number">28</span>;<br>            <span class="hljs-keyword">case</span> APRIL, JUNE, SEPTEMBER, NOVEMBER -&gt; <span class="hljs-number">30</span>;<br>            <span class="hljs-keyword">default</span> -&gt; <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">IllegalStateException</span>();<br>        &#125;;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>We are using a bit different notation in the <code>case</code> block. We are using <code>-&gt;</code> instead of the colon. Even though we are not invoking the <code>break</code> statement, we will still jump out of the switch statement on the first valid condition.</p>
+<p>This will do the same thing as the code shown in <a target="_blank" rel="noopener" href="https://reflectoring.io/java-release-notes/#old-way-of-switch-statements">the previous example</a>.</p>
+<h4 id="The-yield-Keyword"><a href="#The-yield-Keyword" class="headerlink" title="The yield Keyword"></a>The <code>yield</code> Keyword</h4><p>The logic inside the <code>case</code> block can be a bit more complicated than just returning a value. For example, we want to log which month the user sent us:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">SwitchExpression</span> &#123;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        <span class="hljs-type">int</span> <span class="hljs-variable">days</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>;<br>        <span class="hljs-type">Month</span> <span class="hljs-variable">month</span> <span class="hljs-operator">=</span> Month.APRIL;<br><br>        days = <span class="hljs-keyword">switch</span> (month) &#123;<br>            <span class="hljs-keyword">case</span> JANUARY, MARCH, MAY, JULY, AUGUST, OCTOBER, DECEMBER -&gt; &#123;<br>                System.out.println(month);<br>                <span class="hljs-keyword">yield</span> <span class="hljs-number">31</span>;<br>            &#125;<br>            <span class="hljs-keyword">case</span> FEBRUARY -&gt; &#123;<br>                System.out.println(month);<br>                <span class="hljs-keyword">yield</span> <span class="hljs-number">28</span>;<br>            &#125;<br>            <span class="hljs-keyword">case</span> APRIL, JUNE, SEPTEMBER, NOVEMBER -&gt; &#123;<br>                System.out.println(month);<br>                <span class="hljs-keyword">yield</span> <span class="hljs-number">30</span>;<br>            &#125;<br>            <span class="hljs-keyword">default</span> -&gt; <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">IllegalStateException</span>();<br>        &#125;;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>In a multi-line code block, we have to use the <code>yield</code> keyword to return a value from a <code>case</code> block.</p>
+<p>To read more about using switch expressions please refer to the <a target="_blank" rel="noopener" href="https://docs.oracle.com/en/java/javase/14/language/switch-expressions.html">docs</a>.</p>
+<h2 id="Java-15"><a href="#Java-15" class="headerlink" title="Java 15"></a>Java 15</h2><h3 id="Text-Blocks"><a href="#Text-Blocks" class="headerlink" title="Text Blocks"></a>Text Blocks</h3><p>Text block is an improvement on formatting String variables. From Java 15, we can write a String that spans through several lines as regular text.</p>
+<h4 id="Example-Without-Using-Text-Blocks"><a href="#Example-Without-Using-Text-Blocks" class="headerlink" title="Example Without Using Text Blocks"></a>Example Without Using Text Blocks</h4><p>We want to send an HTML document via email. We are storing the email template into a variable:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">TextBlocks</span> &#123;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        System.out.println(<br>        <span class="hljs-string">&quot;&lt;!DOCTYPE html&gt;\n&quot;</span> +<br>                <span class="hljs-string">&quot;&lt;html&gt;\n&quot;</span> +<br>                <span class="hljs-string">&quot;     &lt;head&gt;\n&quot;</span> +<br>                <span class="hljs-string">&quot;        &lt;title&gt;Example&lt;/title&gt;\n&quot;</span> +<br>                <span class="hljs-string">&quot;    &lt;/head&gt;\n&quot;</span> +<br>                <span class="hljs-string">&quot;    &lt;body&gt;\n&quot;</span> +<br>                <span class="hljs-string">&quot;        &lt;p&gt;This is an example of a simple HTML &quot;</span> +<br>                <span class="hljs-string">&quot;page with one paragraph.&lt;/p&gt;\n&quot;</span> +<br>                <span class="hljs-string">&quot;    &lt;/body&gt;\n&quot;</span> +<br>                <span class="hljs-string">&quot;&lt;/html&gt;\n&quot;</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>We are formatting our string like in the example above. We need to take care of new lines and append all the lines to a single string.</p>
+<h4 id="Example-of-Using-Text-Blocks"><a href="#Example-of-Using-Text-Blocks" class="headerlink" title="Example of Using Text Blocks"></a>Example of Using Text Blocks</h4><p>Let us look into the same example of an HTML template for email. We want to send an example email with some straightforward HTML formatting. This time we will use a text block:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">TextBlocks</span> &#123;<br>    <br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        System.out.println(<br>        <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">                &lt;!DOCTYPE html&gt;</span><br><span class="hljs-string">                &lt;html&gt;</span><br><span class="hljs-string">                    &lt;head&gt;</span><br><span class="hljs-string">                        &lt;title&gt;Example&lt;/title&gt;</span><br><span class="hljs-string">                    &lt;/head&gt;</span><br><span class="hljs-string">                    &lt;body&gt;</span><br><span class="hljs-string">                        &lt;p&gt;This is an example of a simple HTML </span><br><span class="hljs-string">                        page with one paragraph.&lt;/p&gt;</span><br><span class="hljs-string">                    &lt;/body&gt;</span><br><span class="hljs-string">                &lt;/html&gt;      </span><br><span class="hljs-string">                &quot;&quot;&quot;</span><br>        );<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>We used special syntax for opening and closing quotes: <code>&quot;&quot;&quot;</code>. This allows us to treat our string as if we are writing it in a .txt file.</p>
+<p>There are some rules that we need to abide by when using a text block. We need to make sure that we put a new line after our opening quotes, or our compiler will throw an error:</p>
+<figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs livecodeserver">Illegal <span class="hljs-keyword">text</span> block <span class="hljs-built_in">start</span>: missing <span class="hljs-built_in">new</span> <span class="hljs-built_in">line</span> <span class="hljs-keyword">after</span> opening quotes.<br></code></pre></td></tr></table></figure>
+
+<p>If we want to end our string with <code>\n</code> we can do it by putting new line before closing <code>&quot;&quot;&quot;</code> like in the example above.</p>
+<p>To read more about text blocks please refer to the <a target="_blank" rel="noopener" href="https://docs.oracle.com/en/java/javase/15/text-blocks/index.html">docs</a>.</p>
+<h2 id="Java-16"><a href="#Java-16" class="headerlink" title="Java 16"></a>Java 16</h2><h3 id="Pattern-Matching-of-instanceof"><a href="#Pattern-Matching-of-instanceof" class="headerlink" title="Pattern Matching of instanceof"></a>Pattern Matching of instanceof</h3><p>Pattern matching on the <code>instanceof</code> allows us to cast our variable inline and use it inside the desired <code>if-else</code> block without explicitly casting it.</p>
+<h4 id="Example-Without-Pattern-Matching"><a href="#Example-Without-Pattern-Matching" class="headerlink" title="Example Without Pattern Matching"></a>Example Without Pattern Matching</h4><p>We have a base class called <code>Vehicle</code> and two classes that extends it: <code>Car</code> and <code>Bicycle</code>. We omitted the code for this, and you can look it up in the <a target="_blank" rel="noopener" href="https://github.com/thombergs/code-examples/tree/master/core-java/versions">GitHub repo</a>.</p>
+<p>Our algorithm for calculating prices is depending on the instance of the vehicle that is sent to it:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">PatternMatching</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-type">double</span> <span class="hljs-title function_">priceOld</span><span class="hljs-params">(Vehicle v)</span> &#123;<br>        <span class="hljs-keyword">if</span> (v <span class="hljs-keyword">instanceof</span> Car) &#123;<br>            <span class="hljs-type">Car</span> <span class="hljs-variable">c</span> <span class="hljs-operator">=</span> (Car) v;<br>            <span class="hljs-keyword">return</span> <span class="hljs-number">10000</span> - c.kilomenters * <span class="hljs-number">0.01</span> -<br>                    (Calendar.getInstance().get(Calendar.YEAR) -<br>                            c.year) * <span class="hljs-number">100</span>;<br>        &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (v <span class="hljs-keyword">instanceof</span> Bicycle) &#123;<br>            <span class="hljs-type">Bicycle</span> <span class="hljs-variable">b</span> <span class="hljs-operator">=</span> (Bicycle) v;<br>            <span class="hljs-keyword">return</span> <span class="hljs-number">1000</span> + b.wheelSize * <span class="hljs-number">10</span>;<br>        &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">IllegalArgumentException</span>();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>Since we are not using pattern matching, we need to cast the vehicle into the correct type inside each <code>if-else</code> block. As we can see, it is a typical example of boilerplate code for which Java is famous.</p>
+<h4 id="Using-Pattern-Matching"><a href="#Using-Pattern-Matching" class="headerlink" title="Using Pattern Matching"></a>Using Pattern Matching</h4><p>Let’s see how can we can discard the boilerplate part from the example <a target="_blank" rel="noopener" href="https://reflectoring.io/java-release-notes/#example-without-pattern-matching">above</a>:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">PatternMatching</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-type">double</span> <span class="hljs-title function_">price</span><span class="hljs-params">(Vehicle v)</span> &#123;<br>        <span class="hljs-keyword">if</span> (v <span class="hljs-keyword">instanceof</span> Car c) &#123;<br>            <span class="hljs-keyword">return</span> <span class="hljs-number">10000</span> - c.kilomenters * <span class="hljs-number">0.01</span> -<br>                    (Calendar.getInstance().get(Calendar.YEAR) -<br>                            c.year) * <span class="hljs-number">100</span>;<br>        &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (v <span class="hljs-keyword">instanceof</span> Bicycle b) &#123;<br>            <span class="hljs-keyword">return</span> <span class="hljs-number">1000</span> + b.wheelSize * <span class="hljs-number">10</span>;<br>        &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">IllegalArgumentException</span>();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>One thing to note is the scope of the casted variable. It’s visible only within the if statement.</p>
+<p>For more information about pattern matching in <code>instanceof</code> method please refer to the <a target="_blank" rel="noopener" href="https://docs.oracle.com/en/java/javase/16/language/pattern-matching-instanceof-operator.html">docs</a>.</p>
+<h3 id="Records"><a href="#Records" class="headerlink" title="Records"></a>Records</h3><p>How many POJOs (Plain Old Java Objects) have you written?</p>
+<p>Well, I can answer for myself: “Too many!”.</p>
+<p>Java has had a bad reputation for boilerplate code. Lombok allowed us to stop worrying about getters, setters, etc. Java 16 finally introduced records to remove a lot of boilerplate code.</p>
+<p>A record class is nothing more than regular POJO, for which most of the code is generated from the definition.</p>
+<h4 id="Plain-Old-Java-Object-definition"><a href="#Plain-Old-Java-Object-definition" class="headerlink" title="Plain Old Java Object definition"></a>Plain Old Java Object definition</h4><p>Let us look into the example of the POJO class before Java 16 introduced records:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Vehicle</span> &#123;<br>    String code;<br>    String engineType;<br><br>    <span class="hljs-keyword">public</span> String <span class="hljs-title function_">getCode</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> code;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">setCode</span><span class="hljs-params">(String code)</span> &#123;<br>        <span class="hljs-built_in">this</span>.code = code;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> String <span class="hljs-title function_">getEngineType</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-keyword">return</span> engineType;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">setEngineType</span><span class="hljs-params">(String engineType)</span> &#123;<br>        <span class="hljs-built_in">this</span>.engineType = engineType;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">Vehicle</span><span class="hljs-params">(String code, String engineType)</span> &#123;<br>        <span class="hljs-built_in">this</span>.code = code;<br>        <span class="hljs-built_in">this</span>.engineType = engineType;<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">equals</span><span class="hljs-params">(Object o)</span> ...<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">int</span> <span class="hljs-title function_">hashCode</span><span class="hljs-params">()</span> ...<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> String <span class="hljs-title function_">toString</span><span class="hljs-params">()</span> ...<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>There are almost 50 lines of code for object that contains only two properties. The IDE generated this code, but still, it is there and has to be maintained.</p>
+<h4 id="Record-Definition"><a href="#Record-Definition" class="headerlink" title="Record Definition"></a>Record Definition</h4><p>Definition of a vehicle record, with the same two properties, can be done in just one line:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">record</span> <span class="hljs-title class_">VehicleRecord</span><span class="hljs-params">(String code, String engineType)</span> &#123;&#125;<br></code></pre></td></tr></table></figure>
+
+<p>This one line has all the same getters, setters, constructors, etc. as from the example <a target="_blank" rel="noopener" href="https://reflectoring.io/java-release-notes/#plain-old-java-object-definition">above</a>. One thing to note is that the record class is, by default, final, and we need to comply with that. That means we cannot extend a record class, but most other things are available for us.</p>
+<p>To read more about record classes please refer to the <a target="_blank" rel="noopener" href="https://docs.oracle.com/en/java/javase/16/language/records.html">docs</a>.</p>
+<h2 id="Java-17"><a href="#Java-17" class="headerlink" title="Java 17"></a>Java 17</h2><h3 id="Sealed-Classes"><a href="#Sealed-Classes" class="headerlink" title="Sealed Classes"></a>Sealed Classes</h3><p>The <code>final</code> modifier on a class doesn’t allow anyone to extend it. What about when we want to extend a class but only allow it for some classes?</p>
+<p>We are back at our car dealership business. We are so proud of our algorithm for calculating prices that we want to expose it. We don’t want anyone using our Vehicle representation, though. It is valid just for our business. We can see a bit of a problem here. We need to expose class but constrain it also.</p>
+<p>This is where Java 17 comes into play with sealed classes. The sealed class allows us to make class effectively final for everyone except explicitly mentioned classes.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">sealed</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Vehicle</span> <span class="hljs-keyword">permits</span> Bicycle, Car &#123;...&#125;<br></code></pre></td></tr></table></figure>
+
+<p>We added a <code>sealed</code> modifier to our <code>Vehicle</code> class, and we had to add the <code>permits</code> keyword with a list of classes that we allow to extend it. After this change, we are still getting errors from the compiler.</p>
+<p>There is one more thing that we need to do here.</p>
+<p>We need to add <code>final</code>, <code>sealed</code>, or <code>non-sealed</code> modifiers to classes that will extend our class.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">final</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">Bicycle</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Vehicle</span> &#123;...&#125;<br></code></pre></td></tr></table></figure>
+
+<h4 id="Constraints"><a href="#Constraints" class="headerlink" title="Constraints"></a>Constraints</h4><p>Several constraints have to be met for the sealed class to work:</p>
+<ul>
+<li>Permitted subclasses must be accessible by the sealed class at compile time</li>
+<li>Permitted subclasses must directly extend the sealed class</li>
+<li>Permitted subclasses must have one of the following modifiers:<ul>
+<li>final</li>
+<li>sealed</li>
+<li>non-sealed</li>
+</ul>
+</li>
+<li>Permitted subclasses must be in the same Java module</li>
+</ul>
+<p>More details about sealed classes can be found in the <a target="_blank" rel="noopener" href="https://docs.oracle.com/en/java/javase/17/language/sealed-classes-and-interfaces.html">docs</a>.</p>
+<p>文章原文链接：<a target="_blank" rel="noopener" href="https://reflectoring.io/java-release-notes/#diamond-syntax-with-inner-anonymous-classes">https://reflectoring.io/java-release-notes/#diamond-syntax-with-inner-anonymous-classes</a></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/java/" class="category-chain-item">java</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Java Features from Java 8 to Java 17</div>
+      <div>https://liu620.github.io/2021/12/06/Java Features from Java 8 to Java 17/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>alen</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2021年12月6日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/03/02/Netty%20HashedWheelTimer%20%E6%97%B6%E9%97%B4%E8%BD%AE%E6%BA%90%E7%A0%81%E8%AF%A6%E8%A7%A3/" title="Netty HashedWheelTimer 时间轮源码详解">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Netty HashedWheelTimer 时间轮源码详解</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/12/03/Java%20Stream%20%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" title="Java Stream 源码分析">
+                        <span class="hidden-mobile">Java Stream 源码分析</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"r6gyKRkhuHURhnAvgUgKlf74-gzGzoHsz","appKey":"OeekizSPHVKlyXySIt0cPf9Q","path":"window.location.pathname","placeholder":"期待你的评论","avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

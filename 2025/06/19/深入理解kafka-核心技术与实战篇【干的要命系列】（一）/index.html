@@ -1,0 +1,967 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="alen">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="1. 开篇1.1 前言看8股文学习kafka，对其的理解都是别人的一些总结，都是些嚼碎的散状知识（主要之前面试一问这里深点，就跟个菜鸡😅）。为了让有个立体全面的深入学习，so计划写两篇关于kafka的博客，第一篇是聚焦kafka核心的技术与实战，第二篇是通过源码来加深学习kafka，此为第一篇，这篇更加偏向技术实战，此篇预计分两个篇幅完成（内容比较干）。 1.2 为什么要学习kafka？作为工">
+<meta property="og:type" content="article">
+<meta property="og:title" content="深入理解kafka-核心技术与实战篇【干的要命系列】（一）">
+<meta property="og:url" content="https://liu620.github.io/2025/06/19/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3kafka-%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E4%B8%8E%E5%AE%9E%E6%88%98%E7%AF%87%E3%80%90%E5%B9%B2%E7%9A%84%E8%A6%81%E5%91%BD%E7%B3%BB%E5%88%97%E3%80%91%EF%BC%88%E4%B8%80%EF%BC%89/index.html">
+<meta property="og:site_name" content="Ali’s blog">
+<meta property="og:description" content="1. 开篇1.1 前言看8股文学习kafka，对其的理解都是别人的一些总结，都是些嚼碎的散状知识（主要之前面试一问这里深点，就跟个菜鸡😅）。为了让有个立体全面的深入学习，so计划写两篇关于kafka的博客，第一篇是聚焦kafka核心的技术与实战，第二篇是通过源码来加深学习kafka，此为第一篇，这篇更加偏向技术实战，此篇预计分两个篇幅完成（内容比较干）。 1.2 为什么要学习kafka？作为工">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://liual-image.oss-cn-chengdu.aliyuncs.com/uPic/image-20250619201202850.png">
+<meta property="og:image" content="https://liual-image.oss-cn-chengdu.aliyuncs.com/uPic/image-20250619191803946.png">
+<meta property="og:image" content="https://liual-image.oss-cn-chengdu.aliyuncs.com/uPic/image-20250619192426954.png">
+<meta property="og:image" content="https://liual-image.oss-cn-chengdu.aliyuncs.com/uPic/image-20250619204602741.png">
+<meta property="og:image" content="https://liual-image.oss-cn-chengdu.aliyuncs.com/uPic/image-20250620105405660.png">
+<meta property="og:image" content="https://liual-image.oss-cn-chengdu.aliyuncs.com/uPic/image-20250620145352772.png">
+<meta property="og:image" content="https://liual-image.oss-cn-chengdu.aliyuncs.com/uPic/image-20250620154105495.png">
+<meta property="og:image" content="https://liual-image.oss-cn-chengdu.aliyuncs.com/uPic/image-20250620165240195.png">
+<meta property="article:published_time" content="2025-06-19T14:18:08.000Z">
+<meta property="article:modified_time" content="2025-07-06T14:39:14.511Z">
+<meta property="article:author" content="alen">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://liual-image.oss-cn-chengdu.aliyuncs.com/uPic/image-20250619201202850.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>深入理解kafka-核心技术与实战篇【干的要命系列】（一） - Ali’s blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"liu620.github.io","root":"/","version":"1.9.5","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"01dbd6ec77a591910f5678148a605740","google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+    <!-- Baidu Analytics -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?01dbd6ec77a591910f5678148a605740";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+      }
+    </script>
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="Ali’s blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Ali&#39;s blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="深入理解kafka-核心技术与实战篇【干的要命系列】（一）"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-06-19 14:18" pubdate>
+          2025年6月19日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          13k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          111 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">深入理解kafka-核心技术与实战篇【干的要命系列】（一）</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p><img src="https://liual-image.oss-cn-chengdu.aliyuncs.com/uPic/image-20250619201202850.png" srcset="/img/loading.gif" lazyload></p>
+<h1 id="1-开篇"><a href="#1-开篇" class="headerlink" title="1. 开篇"></a>1. 开篇</h1><h2 id="1-1-前言"><a href="#1-1-前言" class="headerlink" title="1.1 前言"></a>1.1 前言</h2><p>看8股文学习kafka，对其的理解都是别人的一些总结，都是些嚼碎的散状知识（主要之前面试一问这里深点，就跟个菜鸡😅）。为了让有个立体全面的深入学习，so计划写两篇关于kafka的博客，第一篇是聚焦kafka核心的技术与实战，第二篇是通过源码来加深学习kafka，此为第一篇，这篇更加偏向技术实战，此篇预计分两个篇幅完成（内容比较干）。</p>
+<h2 id="1-2-为什么要学习kafka？"><a href="#1-2-为什么要学习kafka？" class="headerlink" title="1.2 为什么要学习kafka？"></a>1.2 为什么要学习kafka？</h2><p>作为工程师或者架构师，在实际的工作中难免遇见大数据业务的建设，由于这些系统都是为公司业务服务的，所以他们仅仅只是执行一些常规的业务逻辑，因此他们不能算是计算密集型，相反更多是数据密集型。对于数据密集型应用来说，如何对应数据的激增、数据的复杂度以及数据高速的变化，是对工程师架构师最有效的证明。就拿数据激增来说，Kafka能有效的隔离上下游业务，将上游的流量激增平滑的传递到子系统中。如果是一名大数据从业人员，熟练掌握Kafka是非常有必要的技能。</p>
+<p>同时Kafka有着广阔的应用场景。目前Apache Kafka被认为是消息引擎领域的引导者，技术学习角度而言，Kafka有很多亮点，我们只需要学习一套框架就能在实际业务系统中实现消息引擎、应用程序集成、分布式存储构建、甚至是流处理应用的开发与部署，简直物超所值。</p>
+<h2 id="1-3-如何学习"><a href="#1-3-如何学习" class="headerlink" title="1.3 如何学习"></a>1.3 如何学习</h2><p>第一步先弄清楚客户端，目前有两大客户端：<strong>Java客户端和libkafka客户端</strong>，然后去官网学习一下代码演示，如何正常的编译和运行这些样例。</p>
+<p>第二步修改对应的样例，理解使用其他API，对这些修改进行观测，做一个小项目来验证学习成果。这个阶段就可以熟读一遍Kafka官方文档，重点理解各种参数。</p>
+<p>最后学习Kafka的高级功能，比如流处理，还能执行高级的流式处理操作，比如时间窗口聚合、流处理链接等。</p>
+<p>如果是相关运维，相应的学习目标应该是学习搭建及管理 Kafka 线上环境，如何进行监控数据等。</p>
+<p>这里用脑图来总结一下学习线路：</p>
+<p><img src="https://liual-image.oss-cn-chengdu.aliyuncs.com/uPic/image-20250619191803946.png" srcset="/img/loading.gif" lazyload></p>
+<h1 id="2-Kafka入门"><a href="#2-Kafka入门" class="headerlink" title="2. Kafka入门"></a>2. Kafka入门</h1><h2 id="2-1-常见术语"><a href="#2-1-常见术语" class="headerlink" title="2.1 常见术语"></a>2.1 常见术语</h2><ul>
+<li>消息：Record。Kafka 是消息引擎嘛，这里的消息就是指 Kafka 处理的主要对象。</li>
+<li>主题：Topic。主题是承载消息的逻辑容器，在实际使用中多用来区分具体的业务。</li>
+<li>分区：Partition。一个有序不变的消息序列。每个主题下可以有多个分区。</li>
+<li>消息位移：Offset。表示分区中每条消息的位置信息，是一个单调递增且不变的值。</li>
+<li>副本：Replica。Kafka 中同一条消息能够被拷贝到多个地方以提供数据冗余，这些地方就是所谓的副本。副本还分为领导者副本和追随者副本，各自有不同的角色划分。副本是在分区层级下的，即每个分区可配置多个副本实现高可用。</li>
+<li>生产者：Producer。向主题发布新消息的应用程序。</li>
+<li>消费者：Consumer。从主题订阅新消息的应用程序。</li>
+<li>消费者位移：Consumer Offset。表征消费者消费进度，每个消费者都有自己的消费者位移。</li>
+<li>消费者组：Consumer Group。多个消费者实例共同组成的一个组，同时消费多个分区以实现高吞吐。</li>
+<li>重平衡：Rebalance。消费者组内某个消费者实例挂掉后，其他消费者实例自动重新分配订阅主题分区的过程。Rebalance 是 Kafka 消费者端实现高可用的重要手段。</li>
+</ul>
+<p><img src="https://liual-image.oss-cn-chengdu.aliyuncs.com/uPic/image-20250619192426954.png" srcset="/img/loading.gif" lazyload></p>
+<h2 id="2-2-Kafka的种类"><a href="#2-2-Kafka的种类" class="headerlink" title="2.2 Kafka的种类"></a>2.2 Kafka的种类</h2><ul>
+<li>Apache Kafka: 最正宗的Kafka，他是后续所有发行版的基础。</li>
+<li>Confluent Kafka: 主要为商业开发工具，拥有原本没有的高级特性，比如跨数据中心备份、Schema注册中心以及集群监控工具等。</li>
+<li>Cloudera&#x2F;Hortonworks Kafka: CDH和Hortonworks提供HDP是非常著名的大数据平台，里边集成了目前主流的大数据框架，能够帮助用户实现分布式存储、集群调度、流处理到机器学习、实时数据库等全方面的数据处理。</li>
+</ul>
+<h1 id="3-Kafka基本使用"><a href="#3-Kafka基本使用" class="headerlink" title="3. Kafka基本使用"></a>3. Kafka基本使用</h1><h2 id="3-1-Kafka线上集群部署方式"><a href="#3-1-Kafka线上集群部署方式" class="headerlink" title="3.1 Kafka线上集群部署方式"></a>3.1 Kafka线上集群部署方式</h2><p>下面从几个方面：操作系统、磁盘、磁盘容量、带宽来讨论</p>
+<h3 id="3-1-2-操作系统"><a href="#3-1-2-操作系统" class="headerlink" title="3.1.2 操作系统"></a>3.1.2 操作系统</h3><p>目前常见的操作系统有 3 种：Linux、Windows 和 macOS。部署在 Linux 上的生产环境是最多的，一般从下面三个方面考虑</p>
+<ul>
+<li>I&#x2F;O 模型的使用</li>
+<li>数据网络的传输效率</li>
+<li>社区支持度</li>
+</ul>
+<p>主流的 I&#x2F;O 模型通常有 5 种类型：阻塞式 I&#x2F;O、非阻塞式 I&#x2F;O、I&#x2F;O 多路复用、信号驱动 I&#x2F;O 和异步 I&#x2F;O。每种 I&#x2F;O 模型都有各自典型的使用场景，比如 Java 中 Socket 对象的阻塞模式和非阻塞模式就对应于前两种模型；而 Linux 中的系统调用 select 函数就属于 I&#x2F;O 多路复用模型；大名鼎鼎的 epoll 系统调用则介于第三种和第四种模型之间；至于第五种模型，其实很少有 Linux 系统支持，反而是 Windows 系统提供了一个叫 IOCP 线程模型属于这一种。</p>
+<p>熟悉 Linux肯定听过零拷贝（Zero Copy）技术，就是当数据在磁盘和网络进行传输时避免昂贵的内核态数据拷贝从而实现快速的数据传输。Linux 平台实现了这样的零拷贝机制。</p>
+<h3 id="3-1-3-磁盘及容量"><a href="#3-1-3-磁盘及容量" class="headerlink" title="3.1.3 磁盘及容量"></a>3.1.3 磁盘及容量</h3><ul>
+<li><p>追求性价比可以不搭建 RAID，使用普通磁盘组成存储空间即可。</p>
+</li>
+<li><p>使用机械磁盘完全能够胜任 Kafka 线上环境。</p>
+</li>
+</ul>
+<p>那么容量相关的，是需要计算规划的，比如每天一亿条1KB大小消息，保存两份且存两周，那么总共就需要200GB的内存。Kafka还需要索引数据大概10%，保存两周那么就是200GB * 1.1 * 14 那就大概需要3TB大小。Kafka还支持数据压缩，压缩比是0.75，那么这就是最后在2.25-3TB之间。</p>
+<p>总之在规划磁盘容量时你需要考虑下面这几个元素：</p>
+<ul>
+<li>新增消息数</li>
+<li>消息留存时间</li>
+<li>平均消息大小</li>
+<li>备份数</li>
+<li>是否启用压缩</li>
+</ul>
+<h3 id="3-1-4-带宽"><a href="#3-1-4-带宽" class="headerlink" title="3.1.4 带宽"></a>3.1.4 带宽</h3><p>带宽需要根据Kafka服务器的数量、业务量处理目标来定，比如需要在一个小时处理1TB的数据，同时需要3台机器，根据实际经验kafka用到70%以上的带宽就会丢包，那么单台的使用带宽就是 700Mb &#x2F; 3 约等于 240Mbps。</p>
+<h2 id="3-2-kafka的配置重要参数"><a href="#3-2-kafka的配置重要参数" class="headerlink" title="3.2 kafka的配置重要参数"></a>3.2 kafka的配置重要参数</h2><p>静态参数，是指你必须在 Kafka 的配置文件 server.properties 中进行设置的参数，不管你是新增、修改还是删除。同时，你必须重启 Broker 进程才能令它们生效。而主题级别参数的设置则有所不同，Kafka 提供了专门的 kafka-configs 命令来修改它们。至于 JVM 和操作系统级别参数，它们的设置方法比较通用化，我介绍的也都是标准的配置参数，因此，你应该很容易就能够对它们进行设置</p>
+<h3 id="Boker的重要参数-静态参数"><a href="#Boker的重要参数-静态参数" class="headerlink" title="Boker的重要参数(静态参数):"></a>Boker的重要参数(静态参数):</h3><ul>
+<li>log.dirs : 指定Broker使用的文件目录路径</li>
+<li>log.dir :  补充log.dirs的单个路径</li>
+<li>zookeeper.connect : ZooKeeper相关设置,保存Kafka集群的元数据信息</li>
+<li>与Broker连接相关的设置<ul>
+<li>listeners:学名叫监听器，告诉外部连接者要通过什么协议访问指定主机名和端口开放的 Kafka 服务</li>
+<li>advertised.listeners:这组监听器是 Broker 用于对外发布的</li>
+<li>host.name&#x2F;port:域名和端口</li>
+</ul>
+</li>
+<li>Topic管理参数<ul>
+<li>auto.create.topics.enable: 是否允许自动创建 Topic</li>
+<li>unclean.leader.election.enable:是否允许 Unclean Leader 选举</li>
+<li>auto.leader.rebalance.enable:是否允许定期进行 Leader 选举</li>
+</ul>
+</li>
+<li>数据留存参数<ul>
+<li>log.retention.{hours|minutes|ms}: 都是控制一条消息数据被保存多长时间</li>
+<li>log.retention.bytes:这是指定 Broker 为消息保存的总磁盘容量大小</li>
+<li>message.max.bytes:控制 Broker 能够接收的最大消息大小</li>
+</ul>
+</li>
+</ul>
+<h3 id="Topic的重要参数："><a href="#Topic的重要参数：" class="headerlink" title="Topic的重要参数："></a>Topic的重要参数：</h3><ul>
+<li>Topic级别参数<ul>
+<li>retention.ms: 规定了该 Topic 消息被保存的时长。默认是 7 天</li>
+<li>retention.bytes: 规定了要为该 Topic 预留多大的磁盘空间</li>
+<li>max.message.bytes: 决定了 Kafka Broker 能够正常接收该 Topic 的最大消息大小</li>
+</ul>
+</li>
+</ul>
+<h3 id="JVM参数："><a href="#JVM参数：" class="headerlink" title="JVM参数："></a>JVM参数：</h3><ul>
+<li>JAVA版本</li>
+<li>堆大小</li>
+<li>垃圾回收器选择</li>
+<li>设置方法：KAFKA_HEAP_OPS 、KAFKA_JVM_PERFORMANCE_OPTS</li>
+</ul>
+<h4 id="操作系统参数"><a href="#操作系统参数" class="headerlink" title="操作系统参数"></a>操作系统参数</h4><ul>
+<li>文件描述符限制</li>
+<li>文件系统类型</li>
+<li>Swappiness</li>
+<li>提交时间</li>
+</ul>
+<h1 id="4-客户端实践及原理剖析"><a href="#4-客户端实践及原理剖析" class="headerlink" title="4. 客户端实践及原理剖析"></a>4. 客户端实践及原理剖析</h1><h2 id="4-1-生产者分区概念"><a href="#4-1-生产者分区概念" class="headerlink" title="4.1 生产者分区概念"></a>4.1 生产者分区概念</h2><h3 id="4-1-1-何为分区？"><a href="#4-1-1-何为分区？" class="headerlink" title="4.1.1 何为分区？"></a>4.1.1 何为分区？</h3><p>A：Kafka的结构是：主题 - 分区 - 消息，主题下的每条消息都会在某一个分区里，如下图</p>
+<p><img src="https://liual-image.oss-cn-chengdu.aliyuncs.com/uPic/image-20250619204602741.png" srcset="/img/loading.gif" lazyload></p>
+<p>其实分区的作用是提供负载均衡的能力，为了实现系统的高伸缩性（Scalability）。这样就可以把读写都在各自的分区里完成，提高系统的吞吐量。不同的分布式系统对分区的叫法也不尽相同。比如在 Kafka 中叫分区，在 MongoDB 和 Elasticsearch 中就叫分片 Shard，而在 HBase 中则叫 Region。但是换汤不换药，整体思想是不变的。</p>
+<h3 id="4-1-2-分区策略"><a href="#4-1-2-分区策略" class="headerlink" title="4.1.2 分区策略"></a>4.1.2 分区策略</h3><p>Kafka 为我们提供了默认的分区策略，同时它也支持你自定义分区策略。如果要自定义分区策略，你需要显式地配置生产者端的参数partitioner.class。在编写生产者程序时，你可以编写一个具体的类实现org.apache.kafka.clients.producer.Partitioner接口。这个接口也很简单，只定义了两个方法：partition()和close()，通常你只需要实现最重要的 partition 方法。我们来看看这个方法的方法签名：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">int</span> <span class="hljs-title function_">partition</span><span class="hljs-params">(String topic, Object key, <span class="hljs-type">byte</span>[] keyBytes, Object value, <span class="hljs-type">byte</span>[] valueBytes, Cluster cluster)</span>;<br></code></pre></td></tr></table></figure>
+
+<p>分区策略有以下几种：</p>
+<ul>
+<li>轮训</li>
+<li>随机</li>
+<li>按照消息key保序</li>
+</ul>
+<h2 id="4-2-Kafka的生产者压缩及算法"><a href="#4-2-Kafka的生产者压缩及算法" class="headerlink" title="4.2 Kafka的生产者压缩及算法"></a>4.2 Kafka的生产者压缩及算法</h2><p>在 Kafka 中，压缩可能发生在两个地方：生产者端和 Broker 端。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">Properties</span> <span class="hljs-variable">props</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Properties</span>();<br>props.put(<span class="hljs-string">&quot;bootstrap.servers&quot;</span>, <span class="hljs-string">&quot;localhost:9092&quot;</span>);<br>props.put(<span class="hljs-string">&quot;acks&quot;</span>, <span class="hljs-string">&quot;all&quot;</span>);<br>props.put(<span class="hljs-string">&quot;key.serializer&quot;</span>, <span class="hljs-string">&quot;org.apache.kafka.common.serialization.StringSerializer&quot;</span>);<br>props.put(<span class="hljs-string">&quot;value.serializer&quot;</span>, <span class="hljs-string">&quot;org.apache.kafka.common.serialization.StringSerializer&quot;</span>);<br><span class="hljs-comment">// 开启GZIP压缩</span><br>props.put(<span class="hljs-string">&quot;compression.type&quot;</span>, <span class="hljs-string">&quot;gzip&quot;</span>);<br><br>Producer&lt;String, String&gt; producer = <span class="hljs-keyword">new</span> <span class="hljs-title class_">KafkaProducer</span>&lt;&gt;(props);<br></code></pre></td></tr></table></figure>
+
+<p>其实大部分情况下 Broker 从 Producer 端接收到消息后仅仅是原封不动地保存而不会对其进行任何修改，但这里的“大部分情况”也是要满足一定条件的。有两种例外情况就可能让 Broker 重新压缩消息。</p>
+<p>情况一：Broker 端指定了和 Producer 端不同的压缩算法。</p>
+<p>情况二：Broker 端发生了消息格式转换。</p>
+<p>最好的方式是：Producer 端压缩、Broker 端保持、Consumer 端解压缩。</p>
+<p>不论哪个版本，Kafka的消息层次分为两次：消息集合(message set)，消息（message）。一个消息集合包含若干日志项，日志项才是真正封装消息的地方。Kafka不会直接操作一条条的消息，而是在消息集合这个层面进行写入操作。</p>
+<p>Kafka 支持 3 种压缩算法：GZIP、Snappy 和 LZ4。从 2.1.0 开始，Kafka 正式支持 Zstandard 算法（简写为 zstd），下边是各个压缩算法的优劣。</p>
+<p> <img src="https://liual-image.oss-cn-chengdu.aliyuncs.com/uPic/image-20250620105405660.png" srcset="/img/loading.gif" lazyload></p>
+<p>在实际使用中，GZIP、Snappy、LZ4 甚至是 zstd 的表现各有千秋。但对于 Kafka 而言，它们的性能测试结果却出奇得一致，即在吞吐量方面：LZ4 &gt; Snappy &gt; zstd 和 GZIP；而在压缩比方面，zstd &gt; LZ4 &gt; GZIP &gt; Snappy。具体到物理资源，使用 Snappy 算法占用的网络带宽最多，zstd 最少，这是合理的，毕竟 zstd 就是要提供超高的压缩比；在 CPU 使用率方面，各个算法表现得差不多，只是在压缩时 Snappy 算法使用的 CPU 较多一些，而在解压缩时 GZIP 算法则可能使用更多的 CPU。</p>
+<h2 id="4-3-怎么保证Kafka消息不丢失"><a href="#4-3-怎么保证Kafka消息不丢失" class="headerlink" title="4.3 怎么保证Kafka消息不丢失"></a>4.3 怎么保证Kafka消息不丢失</h2><ol>
+<li>不要使用 producer.send(msg)，而要使用 producer.send(msg, callback)。记住，一定要使用带有回调通知的 send 方法。</li>
+<li>设置 acks &#x3D; all。acks 是 Producer 的一个参数，代表了你对“已提交”消息的定义。如果设置成 all，则表明所有副本 Broker 都要接收到消息，该消息才算是“已提交”。这是最高等级的“已提交”定义。</li>
+<li>设置 retries 为一个较大的值。这里的 retries 同样是 Producer 的参数，对应前面提到的 Producer 自动重试。当出现网络的瞬时抖动时，消息发送可能会失败，此时配置了 retries &gt; 0 的 Producer 能够自动重试消息发送，避免消息丢失。</li>
+<li>设置 unclean.leader.election.enable &#x3D; false。这是 Broker 端的参数，它控制的是哪些 Broker 有资格竞选分区的 Leader。如果一个 Broker 落后原先的 Leader 太多，那么它一旦成为新的 Leader，必然会造成消息的丢失。故一般都要将该参数设置成 false，即不允许这种情况的发生。</li>
+<li>设置 replication.factor &gt;&#x3D; 3。这也是 Broker 端的参数。其实这里想表述的是，最好将消息多保存几份，毕竟目前防止消息丢失的主要机制就是冗余。设置 min.insync.replicas &gt; 1。这依然是 Broker 端参数，控制的是消息至少要被写入到多少个副本才算是“已提交”。设置成大于 1 可以提升消息持久性。在实际环境中千万不要使用默认值 1。</li>
+<li>确保 replication.factor &gt; min.insync.replicas。如果两者相等，那么只要有一个副本挂机，整个分区就无法正常工作了。我们不仅要改善消息的持久性，防止数据丢失，还要在不降低可用性的基础上完成。推荐设置成 replication.factor &#x3D; min.insync.replicas + 1。确保消息消费完成再提交。</li>
+<li>Consumer 端有个参数 enable.auto.commit，最好把它设置成 false，并采用手动提交位移的方式。就像前面说的，这对于单 Consumer 多线程处理的场景而言是至关重要的。</li>
+</ol>
+<h2 id="4-4-高级功能"><a href="#4-4-高级功能" class="headerlink" title="4.4 高级功能"></a>4.4 高级功能</h2><p>Kafka可以自定义拦截器，支持为生产者和消费者，支持链式拦截，设置方法通过参数进行完成。在一些客户端监控，端到端系统性能检测、以及审计日志上都有典型的应用场景。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">Properties</span> <span class="hljs-variable">props</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Properties</span>();<br>List&lt;String&gt; interceptors = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayList</span>&lt;&gt;();<br>interceptors.add(<span class="hljs-string">&quot;com.yourcompany.kafkaproject.interceptors.AddTimestampInterceptor&quot;</span>); <span class="hljs-comment">// 拦截器1</span><br>interceptors.add(<span class="hljs-string">&quot;com.yourcompany.kafkaproject.interceptors.UpdateCounterInterceptor&quot;</span>); <span class="hljs-comment">// 拦截器2</span><br>props.put(ProducerConfig.INTERCEPTOR_CLASSES_CONFIG, interceptors);<br>……<br></code></pre></td></tr></table></figure>
+
+<h2 id="4-5-生产者如何管理TCP链接的"><a href="#4-5-生产者如何管理TCP链接的" class="headerlink" title="4.5 生产者如何管理TCP链接的"></a>4.5 生产者如何管理TCP链接的</h2><p>Apache Kafka 所有的通讯都是基于TCP的，在创建 KafkaProducer 实例时，生产者应用会在后台创建并启动一个名为 Sender 的线程，该 Sender 线程开始运行时首先会创建与 Broker 的连接，TCP 连接还可能在两个地方被创建：一个是在更新元数据后，另一个是在消息发送时。Producer 端关闭 TCP 连接的方式有两种：一种是用户主动关闭；一种是 Kafka 自动关闭。</p>
+<h2 id="4-6-幂等生产者和事务生产者"><a href="#4-6-幂等生产者和事务生产者" class="headerlink" title="4.6 幂等生产者和事务生产者"></a>4.6 幂等生产者和事务生产者</h2><p>Kafka的消息交付可靠性保障的三种承诺：最多一次、至少一次和精确一次。</p>
+<p>Kafka 是怎么做到精确一次的呢？简单来说，这是通过两种机制：幂等性（Idempotence）和事务（Transaction）</p>
+<h3 id="4-6-1-幂等性-Producer"><a href="#4-6-1-幂等性-Producer" class="headerlink" title="4.6.1 幂等性 Producer"></a>4.6.1 幂等性 Producer</h3><p>在 0.11 之后，指定 Producer 幂等性的方法很简单，仅需要设置一个参数即可，即 props.put(“enable.idempotence”, ture)，或 props.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG， true)</p>
+<h3 id="4-6-2-事务"><a href="#4-6-2-事务" class="headerlink" title="4.6.2 事务"></a>4.6.2 事务</h3><p>事务型 Producer 能够保证将消息原子性地写入到多个分区中。这批消息要么全部写入成功，要么全部失败。</p>
+<p>设置事务型 Producer 的方法也很简单，满足两个要求即可：</p>
+<ul>
+<li>和幂等性 Producer 一样，开启 enable.idempotence &#x3D; true。</li>
+<li>设置 Producer 端参数 transactional. id。最好为其设置一个有意义的名字。</li>
+</ul>
+<p>相关Producer代码中做一些调整：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs java">producer.initTransactions();<br><span class="hljs-keyword">try</span> &#123;<br>  producer.beginTransaction();<br>  producer.send(record1);<br>  producer.send(record2);<br>  producer.commitTransaction();<br>&#125; <span class="hljs-keyword">catch</span> (KafkaException e) &#123;<br>  producer.abortTransaction();<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>和普通 Producer 代码相比，事务型 Producer 的显著特点是调用了一些事务 API，如 initTransaction、beginTransaction、commitTransaction 和 abortTransaction，它们分别对应事务的初始化、事务开始、事务提交以及事务终止。</p>
+<h2 id="4-7-Kafka的消费者组"><a href="#4-7-Kafka的消费者组" class="headerlink" title="4.7 Kafka的消费者组"></a>4.7 Kafka的消费者组</h2><p>Consumer Group是Kafka提供的可扩展且具有容错性的消费者机制。既然是组，必然可以有多个消费者或者消费者实例，他们共享一个公共组ID。组内的所有消费者协调在一起来消费订阅主题的所有分区</p>
+<ol>
+<li>Consumer Group 下可以有一个或多个 Consumer 实例。</li>
+<li>Group ID 是一个字符串，在一个 Kafka 集群中，它标识唯一的一个 Consumer Group。</li>
+<li>Consumer Group 下所有实例订阅的主题的单个分区，只能分配给组内的某个 Consumer 实例消费。这个分区当然也可以被其他的 Group 消费。</li>
+</ol>
+<p>Kafka 仅仅使用 Consumer Group 这一种机制，却同时实现了传统消息引擎系统的两大模型：如果所有实例都属于同一个 Group，那么它实现的就是消息队列模型；如果所有实例分别属于不同的 Group，那么它实现的就是发布 &#x2F; 订阅模型。</p>
+<p>Consumer Group 端大名鼎鼎的重平衡，也就是所谓的 Rebalance 过程，Rebalance 本质上是一种协议，规定了一个 Consumer Group 下的所有 Consumer 如何达成一致，来分配订阅 Topic 的每个分区。比如某个 Group 下有 20 个 Consumer 实例，它订阅了一个具有 100 个分区的 Topic。正常情况下，Kafka 平均会为每个 Consumer 分配 5 个分区。这个分配的过程就叫 Rebalance。</p>
+<p><img src="https://liual-image.oss-cn-chengdu.aliyuncs.com/uPic/image-20250620145352772.png" srcset="/img/loading.gif" lazyload></p>
+<h2 id="4-8-位移主题（-consumer-offsets）"><a href="#4-8-位移主题（-consumer-offsets）" class="headerlink" title="4.8 位移主题（__consumer_offsets）"></a>4.8 位移主题（__consumer_offsets）</h2><p>位移消息都放在位移主题(__consumer_offset topic)中，已经取代zk。 一共有三种消息类型： </p>
+<p>1、__consumer_offset 记录消费组下某个消费者在某个topic的partition的位移信息（是一种key value的一种格式，key由三部分组成 groupid+topic+pattition）。</p>
+<p> 2、consumer group信息（在新建group会创建该消息）。</p>
+<p> 3、tombstone（墓碑消息），移除group consumer所有的信息。 【注意】：第三种消息会在group下的所有consumer下线 且 group偏移信息全部移除才会发出墓碑消息。</p>
+<p>Kafka 使用 Compact 策略来删除位移主题中的过期消息，避免该主题无限期膨胀</p>
+<p> <img src="https://liual-image.oss-cn-chengdu.aliyuncs.com/uPic/image-20250620154105495.png" srcset="/img/loading.gif" lazyload alt="image-20250620154105495"></p>
+<h2 id="4-9-Rebalance"><a href="#4-9-Rebalance" class="headerlink" title="4.9 Rebalance"></a>4.9 Rebalance</h2><p>Rebalance 就是让一个 Consumer Group 下所有的 Consumer 实例就如何消费订阅主题的所有分区达成共识的过程。在 Rebalance 过程中，所有 Consumer 实例共同参与，在协调者组件的帮助下，完成订阅主题分区的分配。但是，在整个过程中，所有实例都不能消费任何消息，因此它对 Consumer 的 TPS 影响很大。</p>
+<h2 id="4-10-位移提交"><a href="#4-10-位移提交" class="headerlink" title="4.10 位移提交"></a>4.10 位移提交</h2><p>位移提交分自动提交和手动提交</p>
+<p>开启自动提交的方法很简单。Consumer端有个参数enable.auto.commit,把它设置成true或者默认就是自动提交。还有一个参数：auto.commit.interval.ms，表示Kafka多少秒后为你自动提交。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">Properties</span> <span class="hljs-variable">props</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Properties</span>();<br>     props.put(<span class="hljs-string">&quot;bootstrap.servers&quot;</span>, <span class="hljs-string">&quot;localhost:9092&quot;</span>);<br>     props.put(<span class="hljs-string">&quot;group.id&quot;</span>, <span class="hljs-string">&quot;test&quot;</span>);<br>     props.put(<span class="hljs-string">&quot;enable.auto.commit&quot;</span>, <span class="hljs-string">&quot;true&quot;</span>);<br>     props.put(<span class="hljs-string">&quot;auto.commit.interval.ms&quot;</span>, <span class="hljs-string">&quot;2000&quot;</span>);<br>     props.put(<span class="hljs-string">&quot;key.deserializer&quot;</span>, <span class="hljs-string">&quot;org.apache.kafka.common.serialization.StringDeserializer&quot;</span>);<br>     props.put(<span class="hljs-string">&quot;value.deserializer&quot;</span>, <span class="hljs-string">&quot;org.apache.kafka.common.serialization.StringDeserializer&quot;</span>);<br>     KafkaConsumer&lt;String, String&gt; consumer = <span class="hljs-keyword">new</span> <span class="hljs-title class_">KafkaConsumer</span>&lt;&gt;(props);<br>     consumer.subscribe(Arrays.asList(<span class="hljs-string">&quot;foo&quot;</span>, <span class="hljs-string">&quot;bar&quot;</span>));<br>     <span class="hljs-keyword">while</span> (<span class="hljs-literal">true</span>) &#123;<br>         ConsumerRecords&lt;String, String&gt; records = consumer.poll(<span class="hljs-number">100</span>);<br>         <span class="hljs-keyword">for</span> (ConsumerRecord&lt;String, String&gt; record : records)<br>             System.out.printf(<span class="hljs-string">&quot;offset = %d, key = %s, value = %s%n&quot;</span>, record.offset(), record.key(), record.value());<br>     &#125;<br></code></pre></td></tr></table></figure>
+
+<p>手动提交要调用对应的API手动提交，最简单的是KafkaConsumer#commitSync()，该方法会提交 KafkaConsumer#poll() 返回的最新位移。从名字上来看，它是一个同步操作，即该方法会一直等待，直到位移被成功提交才会返回</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">while</span> (<span class="hljs-literal">true</span>) &#123;<br>      ConsumerRecords&lt;String, String&gt; records = consumer.poll(Duration.ofSeconds(<span class="hljs-number">1</span>));<br>      process(records); <span class="hljs-comment">// 处理消息</span><br>      <span class="hljs-keyword">try</span> &#123;<br>        consumer.commitSync();<br>      &#125; <span class="hljs-keyword">catch</span> (CommitFailedException e) &#123;<br>        handle(e); <span class="hljs-comment">// 处理提交失败异常</span><br>      &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>一旦设置了 enable.auto.commit 为 true，Kafka 会保证在开始调用 poll 方法时，提交上次 poll 返回的所有消息。从顺序上来说，poll 方法的逻辑是先提交上一批消息的位移，再处理下一批消息，因此它能保证不出现消费丢失的情况。但自动提交位移的一个问题在于，它可能会出现重复消费。</p>
+<p>刚才说的API是同步操作，会导致客户端的阻塞，鉴于这个问题可以使用异步API：KafkaConsumer#commitAsync()</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">while</span> (<span class="hljs-literal">true</span>) &#123;<br>    ConsumerRecords&lt;String, String&gt; records = consumer.poll(Duration.ofSeconds(<span class="hljs-number">1</span>));<br>    process(records); <span class="hljs-comment">// 处理消息</span><br>    consumer.commitAsync((offsets, exception) -&gt; &#123;<br>    	<span class="hljs-keyword">if</span> (exception != <span class="hljs-literal">null</span>)<br>    		handle(exception);<br>    &#125;);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>一般会结合同步异步一起来完成位移提交的处理。</p>
+<p>批处理的解决方式：</p>
+<figure class="highlight lasso"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs lasso"><span class="hljs-keyword">private</span> <span class="hljs-built_in">Map</span>&lt;TopicPartition, OffsetAndMetadata&gt; offsets = <span class="hljs-literal">new</span> HashMap&lt;&gt;();<br>int count = <span class="hljs-number">0</span>;<br>……<br><span class="hljs-keyword">while</span> (<span class="hljs-literal">true</span>) &#123;<br>    ConsumerRecords&lt;<span class="hljs-built_in">String</span>, <span class="hljs-built_in">String</span>&gt; <span class="hljs-keyword">records</span> = consumer.poll(<span class="hljs-built_in">Duration</span>.ofSeconds(<span class="hljs-number">1</span>));<br>    for (ConsumerRecord&lt;<span class="hljs-built_in">String</span>, <span class="hljs-built_in">String</span>&gt; record: <span class="hljs-keyword">records</span>) &#123;<br>        process(record);  <span class="hljs-comment">// 处理消息</span><br>        offsets.put(<span class="hljs-literal">new</span> TopicPartition(record.topic(), record.partition()),<br>                   <span class="hljs-literal">new</span> OffsetAndMetadata(record.offset() + <span class="hljs-number">1</span>)；<br>       <span class="hljs-keyword">if</span>（count % <span class="hljs-number">100</span> == <span class="hljs-number">0</span>）<br>                    consumer.commitAsync(offsets, <span class="hljs-built_in">null</span>); <span class="hljs-comment">// 回调处理逻辑是null</span><br>        count++;<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+<h2 id="4-11-CommitFailedException"><a href="#4-11-CommitFailedException" class="headerlink" title="4.11 CommitFailedException"></a>4.11 CommitFailedException</h2><p>Kafka Consumer端的CommitFailedException异常处理方法 Kafka Consumer端的CommitFailedException异常是指在提交位移时出现错误或异常，通常由于消费者实例连续两次调用poll方法的时间间隔超过了预设值而导致。</p>
+<p>异常的处理方法包括优化消息处理逻辑、调整参数值，或者使用多线程加速消费。具体建议包括缩短单条消息处理时间、增加允许下游系统消费一批消息的最大时长、减少一次性消费的消息总数以及使用多线程来加速消费。</p>
+<p>需要注意消费者组和独立消费者在使用前都要指定group.id。如果出现设置相同group.id值的消费者组程序和独立消费者程序，可能会导致Kafka抛出CommitFailedException异常。</p>
+<h2 id="4-12-多线程开发消费"><a href="#4-12-多线程开发消费" class="headerlink" title="4.12 多线程开发消费"></a>4.12 多线程开发消费</h2><p>谈到 Java Consumer API，最重要的当属它的入口类 KafkaConsumer 了。我们说 KafkaConsumer 是单线程的设计，严格来说这是不准确的。因为，从 Kafka 0.10.1.0 版本开始，KafkaConsumer 就变为了双线程的设计，即用户主线程和心跳线程。</p>
+<h3 id="4-12-1-方案"><a href="#4-12-1-方案" class="headerlink" title="4.12.1 方案"></a>4.12.1 方案</h3><p><img src="https://liual-image.oss-cn-chengdu.aliyuncs.com/uPic/image-20250620165240195.png" srcset="/img/loading.gif" lazyload></p>
+<p><strong>a. 方案一：</strong>对线程 + 多KafkaConsumer实例</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">KafkaConsumerRunner</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">Runnable</span> &#123;<br>     <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> <span class="hljs-type">AtomicBoolean</span> <span class="hljs-variable">closed</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">AtomicBoolean</span>(<span class="hljs-literal">false</span>);<br>     <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> KafkaConsumer consumer;<br><br><br>     <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">run</span><span class="hljs-params">()</span> &#123;<br>         <span class="hljs-keyword">try</span> &#123;<br>             consumer.subscribe(Arrays.asList(<span class="hljs-string">&quot;topic&quot;</span>));<br>             <span class="hljs-keyword">while</span> (!closed.get()) &#123;<br>                  <span class="hljs-type">ConsumerRecords</span> <span class="hljs-variable">records</span> <span class="hljs-operator">=</span> consumer.poll(Duration.ofMillis(<span class="hljs-number">10000</span>));<br>                 <span class="hljs-comment">//  执行消息处理逻辑</span><br>             &#125;<br>         &#125; <span class="hljs-keyword">catch</span> (WakeupException e) &#123;<br>             <span class="hljs-comment">// Ignore exception if closing</span><br>             <span class="hljs-keyword">if</span> (!closed.get()) <span class="hljs-keyword">throw</span> e;<br>         &#125; <span class="hljs-keyword">finally</span> &#123;<br>             consumer.close();<br>         &#125;<br>     &#125;<br><br><br>     <span class="hljs-comment">// Shutdown hook which can be called from a separate thread</span><br>     <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">shutdown</span><span class="hljs-params">()</span> &#123;<br>         closed.set(<span class="hljs-literal">true</span>);<br>         consumer.wakeup();<br>     &#125;<br></code></pre></td></tr></table></figure>
+
+<p><strong>b.方案二：</strong>单线程+单KafkaCOnsumenr+消息处理WOrker线程池</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> KafkaConsumer&lt;String, String&gt; consumer;<br><span class="hljs-keyword">private</span> ExecutorService executors;<br>...<br><br><br><span class="hljs-keyword">private</span> <span class="hljs-type">int</span> <span class="hljs-variable">workerNum</span> <span class="hljs-operator">=</span> ...;<br>executors = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ThreadPoolExecutor</span>(<br>  workerNum, workerNum, <span class="hljs-number">0L</span>, TimeUnit.MILLISECONDS,<br>  <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayBlockingQueue</span>&lt;&gt;(<span class="hljs-number">1000</span>), <br>  <span class="hljs-keyword">new</span> <span class="hljs-title class_">ThreadPoolExecutor</span>.CallerRunsPolicy());<br><br><br>...<br><span class="hljs-keyword">while</span> (<span class="hljs-literal">true</span>)  &#123;<br>  ConsumerRecords&lt;String, String&gt; records = <br>    consumer.poll(Duration.ofSeconds(<span class="hljs-number">1</span>));<br>  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">final</span> ConsumerRecord record : records) &#123;<br>    executors.submit(<span class="hljs-keyword">new</span> <span class="hljs-title class_">Worker</span>(record));<br>  &#125;<br>&#125;<br>..<br></code></pre></td></tr></table></figure>
+
+<h2 id="4-13-Java-消费者是如何管理TCP连接"><a href="#4-13-Java-消费者是如何管理TCP连接" class="headerlink" title="4.13 Java 消费者是如何管理TCP连接"></a>4.13 Java 消费者是如何管理TCP连接</h2><p>TCP 连接是在调用 KafkaConsumer.poll 方法时被创建的。再细粒度地说，在 poll 方法内部有 3 个时机可以创建 TCP 连接。</p>
+<ol>
+<li><p>发起 FindCoordinator 请求时。</p>
+</li>
+<li><p>连接协调者时。</p>
+</li>
+<li><p>消费数据时。</p>
+</li>
+</ol>
+<p>消费者程序会创建 3 类 TCP 连接：</p>
+<ol>
+<li>确定协调者和获取集群元数据。</li>
+<li>连接协调者，令其执行组成员管理操作。</li>
+<li>执行实际的消息获取。</li>
+</ol>
+<h2 id="4-14-消费者组消费进度监控"><a href="#4-14-消费者组消费进度监控" class="headerlink" title="4.14 消费者组消费进度监控"></a>4.14 消费者组消费进度监控</h2><p>对于Kafka消费来说，最重要的事情就是监控他们的消费进度，或者说是监控他们消费的滞后程度。这个滞后程度有个专门的名称：消费Lag或者Consumner Lag。如果滞后太多，数据可能就不在系统的页缓存中，从磁盘中获取数据会导致性能差，更加加大了滞后性（类似于马太效应）。</p>
+<p>消费者进度如此重要，那么我们应该怎么监控呢？</p>
+<ol>
+<li>使用 Kafka 自带的命令行工具 kafka-consumer-groups 脚本。</li>
+<li>使用 Kafka Java Consumer API 编程。</li>
+<li>使用 Kafka 自带的 JMX 监控指标。</li>
+</ol>
+<p>未完待续……</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97/" class="category-chain-item">消息队列</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>深入理解kafka-核心技术与实战篇【干的要命系列】（一）</div>
+      <div>https://liu620.github.io/2025/06/19/深入理解kafka-核心技术与实战篇【干的要命系列】（一）/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>alen</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年6月19日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2025/06/24/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3kafka-%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF%E4%B8%8E%E5%AE%9E%E6%88%98%E7%AF%87%E3%80%90%E5%B9%B2%E7%9A%84%E8%A6%81%E5%91%BD%E7%B3%BB%E5%88%97%E3%80%91%EF%BC%88%E4%BA%8C%EF%BC%89/" title="深入理解kafka-核心技术与实战篇【干的要命系列】（二）">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">深入理解kafka-核心技术与实战篇【干的要命系列】（二）</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/06/14/%E6%9C%89%E5%85%B3%E4%BA%8E%E6%8A%80%E6%9C%AF%E4%BA%BA%E7%9A%84%E6%88%90%E9%95%BF%E6%88%91%E6%83%B3%E8%AF%B4%E4%B8%80%E4%B8%8B/" title="有关于技术人的成长我想说一下">
+                        <span class="hidden-mobile">有关于技术人的成长我想说一下</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"r6gyKRkhuHURhnAvgUgKlf74-gzGzoHsz","appKey":"OeekizSPHVKlyXySIt0cPf9Q","path":"window.location.pathname","placeholder":"期待你的评论","avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

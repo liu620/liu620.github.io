@@ -1,0 +1,897 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="alen">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="Java NIO 有三大组件：  Buffer Channel Selector  BufferBuffer 是一个特定原始类型的容器。Buffer 是一个原始类型的线性的、有限序列，除了 Buffer 存储的内容外，关键属性还包括：capacity, limit 和 position。  capacity：Buffer 包含的元素的数量，capacity 永远不会为负，也不会改变。 limit：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java NIO、Channel、Selector 详解">
+<meta property="og:url" content="https://liu620.github.io/2021/10/14/Java%20NIO%E3%80%81Channel%E3%80%81Selector%20%E8%AF%A6%E8%A7%A3/index.html">
+<meta property="og:site_name" content="Ali’s blog">
+<meta property="og:description" content="Java NIO 有三大组件：  Buffer Channel Selector  BufferBuffer 是一个特定原始类型的容器。Buffer 是一个原始类型的线性的、有限序列，除了 Buffer 存储的内容外，关键属性还包括：capacity, limit 和 position。  capacity：Buffer 包含的元素的数量，capacity 永远不会为负，也不会改变。 limit：">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://yano.oss-cn-beijing.aliyuncs.com/2019-10-14-084412.png">
+<meta property="og:image" content="http://yano.oss-cn-beijing.aliyuncs.com/2019-10-14-113021.jpg">
+<meta property="og:image" content="http://yano.oss-cn-beijing.aliyuncs.com/2019-10-14-114136.png">
+<meta property="og:image" content="http://yano.oss-cn-beijing.aliyuncs.com/2019-10-14-123829.png">
+<meta property="article:published_time" content="2021-10-14T21:00:00.000Z">
+<meta property="article:modified_time" content="2025-07-06T14:39:14.509Z">
+<meta property="article:author" content="alen">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://yano.oss-cn-beijing.aliyuncs.com/2019-10-14-084412.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>Java NIO、Channel、Selector 详解 - Ali’s blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"liu620.github.io","root":"/","version":"1.9.5","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"01dbd6ec77a591910f5678148a605740","google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+    <!-- Baidu Analytics -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?01dbd6ec77a591910f5678148a605740";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+      }
+    </script>
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="Ali’s blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Ali&#39;s blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Java NIO、Channel、Selector 详解"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2021-10-14 21:00" pubdate>
+          2021年10月14日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          8.4k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          70 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">Java NIO、Channel、Selector 详解</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>Java NIO 有三大组件：</p>
+<ol>
+<li>Buffer</li>
+<li>Channel</li>
+<li>Selector</li>
+</ol>
+<h1 id="Buffer"><a href="#Buffer" class="headerlink" title="Buffer"></a>Buffer</h1><p>Buffer 是一个特定<strong>原始类型的容器</strong>。Buffer 是一个原始类型的线性的、有限序列，除了 Buffer 存储的内容外，关键属性还包括：capacity, limit 和 position。</p>
+<ul>
+<li><strong>capacity</strong>：Buffer 包含的元素的数量，capacity 永远不会为负，也不会改变。</li>
+<li><strong>limit</strong>：Buffer 中第一个不能读取或写入的元素索引。limit 永远不会为负，且永远小于等于 capacity</li>
+<li><strong>position</strong>：下一个待读取、写入的元素索引。position 永远不会为负，且永远小于等于 limit</li>
+</ul>
+<p>每个基本类型（布尔类型除外），都有一个 Buffer 的子类。Java NIO 中 Buffer 的一些实现，其中最重要的是 <strong>ByteBuffer</strong>，其余类如 IntBuffer 的实现类未画出。</p>
+<p><img src="http://yano.oss-cn-beijing.aliyuncs.com/2019-10-14-084412.png" srcset="/img/loading.gif" lazyload></p>
+<p>我个人理解，Buffer 就是一个内存数组，并通过 capacity, limit 和 position 三个变量对读写操作进行控制。</p>
+<h2 id="position、limit、capacity"><a href="#position、limit、capacity" class="headerlink" title="position、limit、capacity"></a>position、limit、capacity</h2><p>Buffer 的属性主要有：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// 恒等式: mark &lt;= position &lt;= limit &lt;= capacity</span><br><span class="hljs-keyword">private</span> <span class="hljs-type">int</span> <span class="hljs-variable">mark</span> <span class="hljs-operator">=</span> -<span class="hljs-number">1</span>;<br><span class="hljs-keyword">private</span> <span class="hljs-type">int</span> <span class="hljs-variable">position</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>;<br><span class="hljs-keyword">private</span> <span class="hljs-type">int</span> limit;<br><span class="hljs-keyword">private</span> <span class="hljs-type">int</span> capacity;<br><br><span class="hljs-comment">// 仅在 direct buffers 中使用</span><br><span class="hljs-type">long</span> address;<br></code></pre></td></tr></table></figure>
+
+<p>ByteBuffer 中额外定义了字节数组（其余 Buffer 的子类同理）：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// 该字节数组仅在分配在堆上时才非空（参考下面的 Direct vs. non-direct buffers）</span><br><span class="hljs-keyword">final</span> <span class="hljs-type">byte</span>[] hb;<br></code></pre></td></tr></table></figure>
+
+<p>Buffer 就是根据这 4 个 int 型字段来配合内存数组的读写。这 4 个属性分别为：</p>
+<ul>
+<li><strong>mark</strong>：临时保存 position 的值，每次调用 mark() 方法都会将 mark 设值为当前的 position</li>
+<li><strong>capacity</strong>：Buffer 缓冲区容量，capacity 永远不会为负，也不会改变。</li>
+<li><strong>limit</strong>：Buffer 中第一个不能读取或写入的元素索引。limit 永远不会为负，且永远小于等于 capacity。写模式下，limit 代表的是最大能写入的数据，limit &#x3D; capacity；读模式下，limit &#x3D; Buffer 实际写入的数据大小。</li>
+<li><strong>position</strong>：下一个待读取、写入的元素索引。position 永远不会为负，且永远小于等于 limit。</li>
+</ul>
+<p><img src="http://yano.oss-cn-beijing.aliyuncs.com/2019-10-14-113021.jpg" srcset="/img/loading.gif" lazyload></p>
+<h2 id="ByteBuffer"><a href="#ByteBuffer" class="headerlink" title="ByteBuffer"></a>ByteBuffer</h2><p>从上图中我们可以看到，ByteBuffer 类有 2 个实现类：</p>
+<ol>
+<li><strong>MappedByteBuffer</strong>：DirectByteBuffer 的抽象类，JVM 会尽可能交给本地方法操作 I&#x2F;O，其内存不会分配在堆上，不会占用应用程序的内存。</li>
+<li><strong>HeapByteBuffer</strong>：顾名思义是存储在堆上的 Buffer，我们直接调用 <code>ByteBuffer.allocate(1024);</code> 时会创建此类 Buffer。</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> ByteBuffer <span class="hljs-title function_">allocate</span><span class="hljs-params">(<span class="hljs-type">int</span> capacity)</span> &#123;<br>    <span class="hljs-keyword">if</span> (capacity &lt; <span class="hljs-number">0</span>)<br>        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">IllegalArgumentException</span>();<br>    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">HeapByteBuffer</span>(capacity, capacity);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="Direct-vs-non-direct-buffers"><a href="#Direct-vs-non-direct-buffers" class="headerlink" title="Direct vs. non-direct buffers"></a>Direct vs. non-direct buffers</h2><p>一个 byte buffer 可以是 direct，也可以是非 direct 的。对于 direct byte buffer，JVM 将尽量在本机上执行 I&#x2F;O 操作。也就是说，JVM 尽量避免每次在调用操作系统 I&#x2F;O 操作前，将缓冲区内容复制到中间缓冲区。</p>
+<p>可以通过类中的 allocateDirect 工厂方法创建 direct buffer，这个方法创建的 direct buffer 通常比 non-direct buffer 具有更高的分配和释放成本。Direct buffer 内存可能分配在 GC 堆的外部，所以对应用程序的内存占用影响并不明显。所以建议将 direct buffer 分配给大型、寿命长的、受底层操作系统 I&#x2F;O 操作约束的缓冲区。</p>
+<p>可以通过调用 isDirect 方法判断 byte buffer 是否是 direct 的。</p>
+<h2 id="Buffer-初始化"><a href="#Buffer-初始化" class="headerlink" title="Buffer 初始化"></a>Buffer 初始化</h2><p>Buffer 可以通过 allocation 方法创建，也可以通过字节数组的 wrapping 方法创建并填充。</p>
+<figure class="highlight abnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs abnf">ByteBuffer byteBuf <span class="hljs-operator">=</span> ByteBuffer.allocate(<span class="hljs-number">1024</span>)<span class="hljs-comment">;</span><br></code></pre></td></tr></table></figure>
+
+<figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs arduino"><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-type">static</span> ByteBuffer <span class="hljs-title">wrap</span><span class="hljs-params">(<span class="hljs-type">byte</span>[] array)</span> </span>&#123;<br>    ...<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="填充-Buffer"><a href="#填充-Buffer" class="headerlink" title="填充 Buffer"></a>填充 Buffer</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// 填充一个 byte</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> ByteBuffer <span class="hljs-title function_">put</span><span class="hljs-params">(<span class="hljs-type">byte</span> b)</span>;<br><br><span class="hljs-comment">// 在指定位置填充一个 byte</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> ByteBuffer <span class="hljs-title function_">put</span><span class="hljs-params">(<span class="hljs-type">int</span> index, <span class="hljs-type">byte</span> b)</span>;<br><br><span class="hljs-comment">// 批量将 src buffer 填充到本 buffer</span><br><span class="hljs-keyword">public</span> ByteBuffer <span class="hljs-title function_">put</span><span class="hljs-params">(ByteBuffer src)</span> &#123;<br>    ...<br>&#125;<br><br><span class="hljs-comment">// 批量将 src 数组的特定区间填充到本 buffer</span><br><span class="hljs-keyword">public</span> ByteBuffer <span class="hljs-title function_">put</span><span class="hljs-params">(<span class="hljs-type">byte</span>[] src, <span class="hljs-type">int</span> offset, <span class="hljs-type">int</span> length)</span> &#123;<br>    ...<br>&#125;<br><br><span class="hljs-comment">// 批量将 src 数组填充到本 buffer</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">final</span> ByteBuffer <span class="hljs-title function_">put</span><span class="hljs-params">(<span class="hljs-type">byte</span>[] src)</span> &#123;<br>    ...<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>我们还可以将 Channel 的数据填充到 Buffer 中，数据是从外部（文件、网络）读到内存中。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">int</span> <span class="hljs-variable">read</span> <span class="hljs-operator">=</span> channel.read(buffer);<br></code></pre></td></tr></table></figure>
+
+<h2 id="读取-Buffer"><a href="#读取-Buffer" class="headerlink" title="读取 Buffer"></a>读取 Buffer</h2><p>对于前面的写操作，每写一个值，position 都会自增 1，所以 position 会指向最后写入位置的后面一位。</p>
+<p>如果要读取 Buffer 的值，需要调用 <strong>flip()</strong> 方法，从<strong>写模式切换到读模式</strong>。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">final</span> Buffer <span class="hljs-title function_">flip</span><span class="hljs-params">()</span> &#123;<br>    limit = position; <span class="hljs-comment">// 将 limit 设置为实际写入的数据数量</span><br>    position = <span class="hljs-number">0</span>; <span class="hljs-comment">// 重置 position</span><br>    mark = -<span class="hljs-number">1</span>; <span class="hljs-comment">// 将 mark 设置为未标记</span><br>    <span class="hljs-keyword">return</span> <span class="hljs-built_in">this</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>读操作的 get 方法如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// 读取当前 position 的字节，然后 position 自增 1</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-type">byte</span> <span class="hljs-title function_">get</span><span class="hljs-params">()</span>;<br><br><span class="hljs-comment">// 读取 index 的字节（ position 不会自增！）</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-type">byte</span> <span class="hljs-title function_">get</span><span class="hljs-params">(<span class="hljs-type">int</span> index)</span>;<br><br><span class="hljs-comment">// 批量将缓冲区数据传递到 dst 数组中，position 自增 dst 的长度</span><br><span class="hljs-keyword">public</span> ByteBuffer <span class="hljs-title function_">get</span><span class="hljs-params">(<span class="hljs-type">byte</span>[] dst)</span> &#123;<br>    ...<br>&#125;<br><br><span class="hljs-comment">// 批量将缓冲区数据传递到 dst 数组中</span><br><span class="hljs-keyword">public</span> ByteBuffer <span class="hljs-title function_">get</span><span class="hljs-params">(<span class="hljs-type">byte</span>[] dst, <span class="hljs-type">int</span> offset, <span class="hljs-type">int</span> length)</span> &#123;<br>    ...<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>我们可以将缓冲区的数据传输到 Channel 中：</p>
+<ol>
+<li>通过 FileChannel 将数据写到文件中</li>
+<li>通过 SocketChannel 将数据写入网络，发送到远程机器</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">int</span> <span class="hljs-variable">write</span> <span class="hljs-operator">=</span> channel.write(buffer);<br></code></pre></td></tr></table></figure>
+
+<h2 id="mark-reset"><a href="#mark-reset" class="headerlink" title="mark(), reset()"></a>mark(), reset()</h2><p>mark 用于临时保存 position 的值，每次调用 mark() 方法都会将 position 赋值给 mark。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">final</span> Buffer <span class="hljs-title function_">mark</span><span class="hljs-params">()</span> &#123;<br>    mark = position;<br>    <span class="hljs-keyword">return</span> <span class="hljs-built_in">this</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>reset() 方法就是将 position 赋值到上次 mark 的位置上（也就是上一次调用 mark() 方法的时候），通过 mark(), reset() 两个方法的配合，我们可以重复读取某个区间的数据。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">final</span> Buffer <span class="hljs-title function_">reset</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-type">int</span> <span class="hljs-variable">m</span> <span class="hljs-operator">=</span> mark;<br>    <span class="hljs-keyword">if</span> (m &lt; <span class="hljs-number">0</span>)<br>        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">InvalidMarkException</span>();<br>    position = m;<br>    <span class="hljs-keyword">return</span> <span class="hljs-built_in">this</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>注意 mark 构造初始化时数值是 -1，如果 &gt;&#x3D; 0 则表示可以读取。</p>
+<h2 id="rewind-clear-compact"><a href="#rewind-clear-compact" class="headerlink" title="rewind(), clear(), compact()"></a>rewind(), clear(), compact()</h2><p>rewind() 重置 position 为 0。通常在 channel-write 和 get 前调用此方法。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">final</span> Buffer <span class="hljs-title function_">rewind</span><span class="hljs-params">()</span> &#123;<br>    position = <span class="hljs-number">0</span>;<br>    mark = -<span class="hljs-number">1</span>;<br>    <span class="hljs-keyword">return</span> <span class="hljs-built_in">this</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>clear() 会重置 position，将 limit 设置为最大值 capacity，并将 mark 置成 -1。通常在 channel-read 和填充此 buffer 时，会先调用此方法。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">final</span> Buffer <span class="hljs-title function_">clear</span><span class="hljs-params">()</span> &#123;<br>    position = <span class="hljs-number">0</span>;<br>    limit = capacity;<br>    mark = -<span class="hljs-number">1</span>;<br>    <span class="hljs-keyword">return</span> <span class="hljs-built_in">this</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>compact() 方法并不常用，忽略。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> ByteBuffer <span class="hljs-title function_">compact</span><span class="hljs-params">()</span>;<br></code></pre></td></tr></table></figure>
+
+<h2 id="恒等式"><a href="#恒等式" class="headerlink" title="恒等式"></a>恒等式</h2><p>mark, position, limit和 capacity 永远遵循以下关系：</p>
+<pre><code class="hljs">0 &lt;= mark &lt;= position &lt;= limit &lt;= capacity
+</code></pre>
+<p>新创建的 buffer position &#x3D; 0，mark 是未定义的（-1）。limit 的初始值可能是 0，也可能是构造时传入的其他值。新分配的缓冲区元素都初始化为 0。</p>
+<h1 id="Channel"><a href="#Channel" class="headerlink" title="Channel"></a>Channel</h1><p>Channel 是 I&#x2F;O 操作的「桥梁」。Channel 可以是对硬件设备、文件、网络套接字、程序组件等实体的连接，该实体能够执行不同的 I&#x2F;O 操作（读取或写入）。</p>
+<p>Channel 只有 2 种状态：开启和关闭。在创建时就是开启的，一旦关闭就不会再回到打开状态。Channel 一旦关闭，任何对 Channel 调用的 I&#x2F;O 操作都会抛出 ClosedChannelException 异常，可以通过方法 isOpen() 来检测 Channel 是否开启。</p>
+<p>Channel 接口定义如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title class_">Channel</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Closeable</span> &#123;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-type">boolean</span> <span class="hljs-title function_">isOpen</span><span class="hljs-params">()</span>;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">close</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> IOException;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><img src="http://yano.oss-cn-beijing.aliyuncs.com/2019-10-14-114136.png" srcset="/img/loading.gif" lazyload></p>
+<ul>
+<li>FileChannel：文件通道，用于文件读写</li>
+<li>DatagramChannel：UDP 连接</li>
+<li>SocketChannel：TCP 连接通道，TCP 客户端</li>
+<li>ServerSocketChannel：TCP 对应的服务端，用于监听某个端口进来的请求</li>
+</ul>
+<p>读操作：将数据从 Channel 读取到 Buffer 中</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">int</span> <span class="hljs-variable">read</span> <span class="hljs-operator">=</span> channel.read(buffer);<br></code></pre></td></tr></table></figure>
+
+<p>写操作：将数据从 Buffer 写入到 Channel 中</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">int</span> <span class="hljs-variable">write</span> <span class="hljs-operator">=</span> channel.write(buffer);<br></code></pre></td></tr></table></figure>
+
+<h2 id="FileChannel"><a href="#FileChannel" class="headerlink" title="FileChannel"></a>FileChannel</h2><p>读取文件内容，详细说明见注释。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Test</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">testFileChannelRead</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> IOException &#123;<br>    <span class="hljs-comment">// 获取文件的 FileChannel</span><br>    <span class="hljs-type">FileInputStream</span> <span class="hljs-variable">fileInputStream</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">FileInputStream</span>(<span class="hljs-string">&quot;/abc&quot;</span>);<br>    <span class="hljs-type">FileChannel</span> <span class="hljs-variable">channel</span> <span class="hljs-operator">=</span> fileInputStream.getChannel();<br><br>    <span class="hljs-comment">// 创建 ByteBuffer</span><br>    <span class="hljs-type">ByteBuffer</span> <span class="hljs-variable">buffer</span> <span class="hljs-operator">=</span> ByteBuffer.allocate(<span class="hljs-number">30</span>);<br><br>    <span class="hljs-comment">// 将文件内容读取到 buffer 中</span><br>    channel.read(buffer);<br><br>    <span class="hljs-comment">// buffer 从写模式，切换到读模式</span><br>    buffer.flip();<br><br>    <span class="hljs-comment">// 打印 buffer（文件）的内容</span><br>    <span class="hljs-keyword">while</span> (buffer.hasRemaining()) &#123;<br>        System.out.print((<span class="hljs-type">char</span>)buffer.get());<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>写入文件内容，详细说明见注释。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Test</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">testFileChannelWrite</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> IOException &#123;<br>    <span class="hljs-comment">// 获取文件的 FileChannel</span><br>    <span class="hljs-type">FileOutputStream</span> <span class="hljs-variable">fileOutputStream</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">FileOutputStream</span>(<span class="hljs-string">&quot;/abc&quot;</span>);<br>    <span class="hljs-type">FileChannel</span> <span class="hljs-variable">channel</span> <span class="hljs-operator">=</span> fileOutputStream.getChannel();<br><br>    <span class="hljs-comment">// 创建 ByteBuffer</span><br>    <span class="hljs-type">ByteBuffer</span> <span class="hljs-variable">buffer</span> <span class="hljs-operator">=</span> ByteBuffer.allocate(<span class="hljs-number">30</span>);<br>    buffer.put(<span class="hljs-string">&quot;123456&quot;</span>.getBytes());<br><br>    <span class="hljs-comment">// Buffer 切换为读模式</span><br>    buffer.flip();<br>    <span class="hljs-keyword">while</span>(buffer.hasRemaining()) &#123;<br>        <span class="hljs-comment">// 将 Buffer 中的内容写入文件</span><br>        channel.write(buffer);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="SocketChannel"><a href="#SocketChannel" class="headerlink" title="SocketChannel"></a>SocketChannel</h2><p>SocketChannel 顾名思义，就是 Socket 的 Channel，能够读写 Socket。操作缓冲区同 FileChannel。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Test</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">testSocketChannel</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> IOException &#123;<br>    <span class="hljs-type">SocketChannel</span> <span class="hljs-variable">socketChannel</span> <span class="hljs-operator">=</span> SocketChannel.open(<span class="hljs-keyword">new</span> <span class="hljs-title class_">InetSocketAddress</span>(<span class="hljs-string">&quot;localhost&quot;</span>, <span class="hljs-number">80</span>));<br><br>    <span class="hljs-comment">// 创建 ByteBuffer</span><br>    <span class="hljs-type">ByteBuffer</span> <span class="hljs-variable">buffer</span> <span class="hljs-operator">=</span> ByteBuffer.allocate(<span class="hljs-number">30</span>);<br>    <span class="hljs-comment">// 读取数据</span><br>    socketChannel.read(buffer);<br><br>    <span class="hljs-comment">// 写入数据到网络连接中</span><br>    <span class="hljs-keyword">while</span>(buffer.hasRemaining()) &#123;<br>        socketChannel.write(buffer);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="ServerSocketChannel"><a href="#ServerSocketChannel" class="headerlink" title="ServerSocketChannel"></a>ServerSocketChannel</h2><p>ServerSocketChannel 用于监听机器端口，管理从这个端口进来的 TCP 连接。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// 实例化</span><br><span class="hljs-type">ServerSocketChannel</span> <span class="hljs-variable">serverSocketChannel</span> <span class="hljs-operator">=</span> ServerSocketChannel.open();<br><span class="hljs-comment">// 监听 8080 端口</span><br>serverSocketChannel.socket().bind(<span class="hljs-keyword">new</span> <span class="hljs-title class_">InetSocketAddress</span>(<span class="hljs-number">8080</span>));<br><br><span class="hljs-keyword">while</span> (<span class="hljs-literal">true</span>) &#123;<br>    <span class="hljs-comment">// 一旦有一个 TCP 连接进来，就对应创建一个 SocketChannel 进行处理</span><br>    <span class="hljs-type">SocketChannel</span> <span class="hljs-variable">socketChannel</span> <span class="hljs-operator">=</span> serverSocketChannel.accept();<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<pre><code class="hljs">这里可以看到 SocketChannel 的另一种实例化方式，SocketChannel 可读可写，操作一个网络通道。
+</code></pre>
+<p>ServerSocketChannel 不和 Buffer 打交道了，因为它并不实际处理数据，它一旦接收到请求后，实例化 SocketChannel，之后在这个连接通道上的数据传递它就不管了，因为它需要继续监听端口，等待下一个连接。</p>
+<h2 id="DatagramChannel"><a href="#DatagramChannel" class="headerlink" title="DatagramChannel"></a>DatagramChannel</h2><p>处理 UDP 连接（面向无连接的，不需要握手，只要把数据丢出去就好了），操作字节数组，同 FileChannel，不作过多介绍。</p>
+<h1 id="Selector"><a href="#Selector" class="headerlink" title="Selector"></a>Selector</h1><p>Selector 是非阻塞的，<strong>多路复用</strong>就是基于 Selector 的，Java 能通过 Selector 实现一个线程管理多个 Channel。</p>
+<h2 id="基本操作"><a href="#基本操作" class="headerlink" title="基本操作"></a>基本操作</h2><ol>
+<li>开启一个 Selector（经常被翻译成选择器、多路复用器）</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">Selector</span> <span class="hljs-variable">selector</span> <span class="hljs-operator">=</span> Selector.open();<br></code></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>将 Channel 注册到 Selector 上。前面我们说了，Selector 建立在非阻塞模式之上，所以注册到 Selector 的 Channel 必须要支持非阻塞模式，<strong>FileChannel 不支持非阻塞</strong>，我们这里讨论最常见的 SocketChannel 和 ServerSocketChannel。</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// 将通道设置为非阻塞模式，因为默认都是阻塞模式的</span><br>channel.configureBlocking(<span class="hljs-literal">false</span>);<br><span class="hljs-comment">// 注册</span><br><span class="hljs-type">SelectionKey</span> <span class="hljs-variable">key</span> <span class="hljs-operator">=</span> channel.register(selector, SelectionKey.OP_READ);<br></code></pre></td></tr></table></figure>
+
+<p>register 方法的第二个参数是 SelectionKey 中的常量，代表要监听感兴趣的事件，总共有以下 4 种：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">// 通道有数据可读</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">int</span> <span class="hljs-variable">OP_READ</span> <span class="hljs-operator">=</span> <span class="hljs-number">1</span> &lt;&lt; <span class="hljs-number">0</span>;<br><span class="hljs-comment">// 可以向通道中写数据</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">int</span> <span class="hljs-variable">OP_WRITE</span> <span class="hljs-operator">=</span> <span class="hljs-number">1</span> &lt;&lt; <span class="hljs-number">2</span>;<br><span class="hljs-comment">// 成功建立 TCP 连接</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">int</span> <span class="hljs-variable">OP_CONNECT</span> <span class="hljs-operator">=</span> <span class="hljs-number">1</span> &lt;&lt; <span class="hljs-number">3</span>;<br><span class="hljs-comment">// 接受 TCP 连接</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-type">int</span> <span class="hljs-variable">OP_ACCEPT</span> <span class="hljs-operator">=</span> <span class="hljs-number">1</span> &lt;&lt; <span class="hljs-number">4</span>;<br></code></pre></td></tr></table></figure>
+
+<p>注册方法返回值是 SelectionKey 实例，它包含了 Channel 和 Selector 信息，也包括了一个叫做 Interest Set 的信息，即我们设置的我们感兴趣的正在监听的事件集合。</p>
+<ol start="3">
+<li>调用 select() 方法获取通道信息。用于判断是否有我们感兴趣的事件已经发生了。</li>
+</ol>
+<h2 id="基本用法"><a href="#基本用法" class="headerlink" title="基本用法"></a>基本用法</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">Selector</span> <span class="hljs-variable">selector</span> <span class="hljs-operator">=</span> Selector.open();<br><br>channel.configureBlocking(<span class="hljs-literal">false</span>);<br><br><span class="hljs-type">SelectionKey</span> <span class="hljs-variable">key</span> <span class="hljs-operator">=</span> channel.register(selector, SelectionKey.OP_READ);<br><br><span class="hljs-keyword">while</span>(<span class="hljs-literal">true</span>) &#123;<br>  <span class="hljs-comment">// 判断是否有事件准备好</span><br>  <span class="hljs-type">int</span> <span class="hljs-variable">readyChannels</span> <span class="hljs-operator">=</span> selector.select();<br>  <span class="hljs-keyword">if</span>(readyChannels == <span class="hljs-number">0</span>) <span class="hljs-keyword">continue</span>;<br><br>  <span class="hljs-comment">// 遍历</span><br>  Set&lt;SelectionKey&gt; selectedKeys = selector.selectedKeys();<br>  Iterator&lt;SelectionKey&gt; keyIterator = selectedKeys.iterator();<br>  <span class="hljs-keyword">while</span>(keyIterator.hasNext()) &#123;<br>    <span class="hljs-type">SelectionKey</span> <span class="hljs-variable">key</span> <span class="hljs-operator">=</span> keyIterator.next();<br><br>    <span class="hljs-keyword">if</span>(key.isAcceptable()) &#123;<br>        <span class="hljs-comment">// a connection was accepted by a ServerSocketChannel.</span><br><br>    &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (key.isConnectable()) &#123;<br>        <span class="hljs-comment">// a connection was established with a remote server.</span><br><br>    &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (key.isReadable()) &#123;<br>        <span class="hljs-comment">// a channel is ready for reading</span><br><br>    &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (key.isWritable()) &#123;<br>        <span class="hljs-comment">// a channel is ready for writing</span><br>    &#125;<br><br>    keyIterator.remove();<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="I-O-多路复用原理"><a href="#I-O-多路复用原理" class="headerlink" title="I&#x2F;O 多路复用原理"></a>I&#x2F;O 多路复用原理</h2><p>这里放上一张原来总结的思维导图截图，具体原理需要另行写篇文章。</p>
+<p><img src="http://yano.oss-cn-beijing.aliyuncs.com/2019-10-14-123829.png" srcset="/img/loading.gif" lazyload></p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ul>
+<li><p>Buffer 和数组差不多，它有 position、limit、capacity 几个重要属性。put() 一下数据、flip() 切换到读模式、然后用 get() 获取数据、clear() 一下清空数据、重新回到 put() 写入数据。</p>
+</li>
+<li><p>Channel 基本上只和 Buffer 打交道，最重要的接口就是 channel.read(buffer) 和 channel.write(buffer)。</p>
+</li>
+<li><p>Selector 用于实现非阻塞 IO，这里仅仅介绍接口使用，后续请关注非阻塞 IO 的介绍。</p>
+</li>
+</ul>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/java/" class="category-chain-item">java</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Java NIO、Channel、Selector 详解</div>
+      <div>https://liu620.github.io/2021/10/14/Java NIO、Channel、Selector 详解/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>alen</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2021年10月14日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/11/29/Java%20String%20%E6%BC%94%E8%BF%9B%E5%85%A8%E8%A7%A3%E6%9E%90/" title="Java String 演进全解析">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Java String 演进全解析</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/09/13/Java%20ClassLoader/" title="Java ClassLoader">
+                        <span class="hidden-mobile">Java ClassLoader</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"r6gyKRkhuHURhnAvgUgKlf74-gzGzoHsz","appKey":"OeekizSPHVKlyXySIt0cPf9Q","path":"window.location.pathname","placeholder":"期待你的评论","avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

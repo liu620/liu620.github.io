@@ -1,0 +1,796 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="alen">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="1. 前言目前RAG还形成不了传统意义上的开发范式，它是类似一个应用的框架或者开发思维，是一种结合外部知识检索（Indexing&#x2F;Retrieval）和语言生成模型（LLM）的方法，用于提高生成回答的实时性和上下文相关性，是解决大语言幻觉的工具。 2. 大语言幻觉 大语言会出现幻觉，存在事实性幻觉和忠实性幻觉，表现为对事实的捏造、事实不一致、偏离用户指令、上下文不一致、逻辑不一致等">
+<meta property="og:type" content="article">
+<meta property="og:title" content="基于索引增强(RAG)下的开发理论及总结">
+<meta property="og:url" content="https://liu620.github.io/2025/06/09/%E5%9F%BA%E4%BA%8E%E7%B4%A2%E5%BC%95%E5%A2%9E%E5%BC%BA%E4%B8%8B%E7%9A%84RAG%E5%BC%80%E5%8F%91%E7%90%86%E8%AE%BA%E6%80%BB%E7%BB%93/index.html">
+<meta property="og:site_name" content="Ali’s blog">
+<meta property="og:description" content="1. 前言目前RAG还形成不了传统意义上的开发范式，它是类似一个应用的框架或者开发思维，是一种结合外部知识检索（Indexing&#x2F;Retrieval）和语言生成模型（LLM）的方法，用于提高生成回答的实时性和上下文相关性，是解决大语言幻觉的工具。 2. 大语言幻觉 大语言会出现幻觉，存在事实性幻觉和忠实性幻觉，表现为对事实的捏造、事实不一致、偏离用户指令、上下文不一致、逻辑不一致等">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://liual-image.oss-cn-chengdu.aliyuncs.com/uPic/image-20250609183310661.png">
+<meta property="og:image" content="https://liual-image.oss-cn-chengdu.aliyuncs.com/uPic/image-20250609175909753.png">
+<meta property="og:image" content="https://liual-image.oss-cn-chengdu.aliyuncs.com/uPic/%E8%AE%BE%E8%AE%A1.drawio.png">
+<meta property="og:image" content="https://liual-image.oss-cn-chengdu.aliyuncs.com/uPic/image-20250609183051464.png">
+<meta property="article:published_time" content="2025-06-09T18:26:49.000Z">
+<meta property="article:modified_time" content="2025-07-06T14:39:14.511Z">
+<meta property="article:author" content="alen">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://liual-image.oss-cn-chengdu.aliyuncs.com/uPic/image-20250609183310661.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>基于索引增强(RAG)下的开发理论及总结 - Ali’s blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"liu620.github.io","root":"/","version":"1.9.5","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"01dbd6ec77a591910f5678148a605740","google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+    <!-- Baidu Analytics -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?01dbd6ec77a591910f5678148a605740";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+      }
+    </script>
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="Ali’s blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Ali&#39;s blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="基于索引增强(RAG)下的开发理论及总结"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2025-06-09 18:26" pubdate>
+          2025年6月9日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          1.4k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          12 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">基于索引增强(RAG)下的开发理论及总结</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p><img src="https://liual-image.oss-cn-chengdu.aliyuncs.com/uPic/image-20250609183310661.png" srcset="/img/loading.gif" lazyload alt="image-20250609183310661"></p>
+<h1 id="1-前言"><a href="#1-前言" class="headerlink" title="1. 前言"></a>1. 前言</h1><p>目前RAG还形成不了传统意义上的开发范式，它是类似一个应用的框架或者开发思维，是一种结合<strong>外部知识检索（Indexing&#x2F;Retrieval）</strong>和<strong>语言生成模型（LLM）</strong>的方法，用于提高生成回答的实时性和上下文相关性，是解决大语言幻觉的工具。</p>
+<h1 id="2-大语言幻觉"><a href="#2-大语言幻觉" class="headerlink" title="2. 大语言幻觉"></a>2. 大语言幻觉</h1><blockquote>
+<p>大语言会出现幻觉，存在事实性幻觉和忠实性幻觉，表现为对事实的捏造、事实不一致、偏离用户指令、上下文不一致、逻辑不一致等</p>
+</blockquote>
+<h2 id="2-1-产生的原因"><a href="#2-1-产生的原因" class="headerlink" title="2.1 产生的原因"></a>2.1 产生的原因</h2><p>产生幻觉的原因可以分为以下三大来源：<code>数据源</code>——&gt;<code>训练过程</code>——&gt;<code>推理</code></p>
+<ul>
+<li><strong>数据</strong>是大模型的粮食，错误信息和偏见的输入，大模型本身存在的知识边界，一些过时的事实知识</li>
+<li>在<strong>模型的预训练阶段</strong>：前一个token预测下一个token，随着token的增长导致注意力被稀释，错误的token也会导致发生联级错误</li>
+<li>在<strong>模型的对齐阶段</strong>：标注的数据超出了大语言本身的能力，会被训练会为超过边界的知识内容，从而放大了幻觉。二是模型的倾向迎合人类的偏好，从而牺牲了信息的真实性</li>
+<li><strong>推理</strong>导致的幻觉：由于推理是概率生成，上下文关注不足，例如softmax瓶颈都会导致生成偏差</li>
+</ul>
+<p>⭐️<u>从涌现&#x2F;创新的角度，大语言产生的<strong>幻觉不会彻底被解决</strong>，如果失去了幻觉，那么大语言模型就无法成长，成为一个只能读取老旧数据的仓储</u></p>
+<h2 id="2-2-幻觉的缓解"><a href="#2-2-幻觉的缓解" class="headerlink" title="2.2 幻觉的缓解"></a>2.2 幻觉的缓解</h2><p>缓解幻觉的方案有很多比如：涵盖调整模型参数、外挂知识、多智能体互动、加入诚实样本</p>
+<p>其实最好的方式就是直接使用收集高质量的事实数据，并消除数据的偏见，并且在训练、对齐、推理阶段做模型本身的调整，但是一般这样的方式成本很高</p>
+<p>所以这里就引入了RAG(索引增强生成)，没错RAG是比较低级（低成本）的一种解决方案，但是它对开发出预期的应用很有效。</p>
+<h1 id="3-RAG简述"><a href="#3-RAG简述" class="headerlink" title="3. RAG简述"></a>3. RAG简述</h1><h3 id="3-1-什么是RAG"><a href="#3-1-什么是RAG" class="headerlink" title="3.1 什么是RAG"></a>3.1 什么是RAG</h3><p>索引增强生成（RAG）是在大模型生成响应之前，引用训练数据之外的权威知识库，对原有训练数据的扩展，所以不用重新训练模型的情况下，可以保持回答的相关性、准确性和实用性。</p>
+<p>简单理解就是：在发起提问之前，先从外部检索对应的知识，和用户的提问一起构成Prompt，再让LLM生成内容。</p>
+<blockquote>
+<p>其实到目前为止，主流的大模型已经可以直接或者间接，通过爬取网页的数据、Function Call、MCP来增强自己，详见ChatGPT 工具-&gt;搜索网页</p>
+</blockquote>
+<h3 id="3-1-RAG的类型"><a href="#3-1-RAG的类型" class="headerlink" title="3.1 RAG的类型"></a>3.1 RAG的类型</h3><p><img src="https://liual-image.oss-cn-chengdu.aliyuncs.com/uPic/image-20250609175909753.png" srcset="/img/loading.gif" lazyload alt="RAG的三种类型"></p>
+<p>a) 一次性检索，b) 迭代索引，c) 事后索引</p>
+<p>现在主流的方式是使用一次性检索</p>
+<h1 id="4-原理流程图"><a href="#4-原理流程图" class="headerlink" title="4. 原理流程图"></a>4. 原理流程图</h1><p>如下:</p>
+<p><img src="https://liual-image.oss-cn-chengdu.aliyuncs.com/uPic/%E8%AE%BE%E8%AE%A1.drawio.png" srcset="/img/loading.gif" lazyload alt="实现原理流程图"></p>
+<p>实际在代码中，无论多么复杂的 RAG、无论如何进行 RAG 优化，**本质上都是执行外部检索，然后将外部检索的内容和用户原始提问合并成最终 Prompt，再向大语言模型发起提问，最终得到对应的内容 **。</p>
+<h1 id="5-RAG开发优化策略"><a href="#5-RAG开发优化策略" class="headerlink" title="5. RAG开发优化策略"></a>5. RAG开发优化策略</h1><p>在RAG开发的6个阶段中，不同的阶段拥有不同的优化策略，需要针对不同的应用进行特定性的优化，</p>
+<p>目前市面上常见的优化方案有：<code>问题转换</code>、<code>多路召回</code>、<code>混合检索</code>、<code>搜索重排</code>、<code>动态路由</code>、图查询、<code>问题重建</code>、<code>自检索</code>等数十种优化策略，每种策略所在的阶段并不一致，效果也有差异，并且相互影响。</p>
+<p>并且RAG优化和LangChain并没有关系，无论使用任何框架、任何编程语言，进行RAG开发时，掌握优化的思路才是最重要的！</p>
+<p>将对应的优化策略整理到RAG运行流程中，优化策略与开发阶段对应图如下：</p>
+<p><img src="https://liual-image.oss-cn-chengdu.aliyuncs.com/uPic/image-20250609183051464.png" srcset="/img/loading.gif" lazyload alt="RAG开发优化策略"></p>
+<h1 id="6-专业词汇"><a href="#6-专业词汇" class="headerlink" title="6. 专业词汇"></a>6. 专业词汇</h1><ul>
+<li><p>DocumentLoader: 文档加载、转化器</p>
+</li>
+<li><p>词分割器、语义分割器</p>
+</li>
+<li><p>Embedding：嵌入转化向量</p>
+</li>
+<li><p>vectorStore 向量数据库</p>
+</li>
+<li><p>Retriever检索又名召回</p>
+</li>
+<li><p>prompt提示词</p>
+</li>
+</ul>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/AI%E5%AD%A6%E4%B9%A0/" class="category-chain-item">AI学习</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>基于索引增强(RAG)下的开发理论及总结</div>
+      <div>https://liu620.github.io/2025/06/09/基于索引增强下的RAG开发理论总结/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>alen</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2025年6月9日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2025/06/14/%E6%9C%89%E5%85%B3%E4%BA%8E%E6%8A%80%E6%9C%AF%E4%BA%BA%E7%9A%84%E6%88%90%E9%95%BF%E6%88%91%E6%83%B3%E8%AF%B4%E4%B8%80%E4%B8%8B/" title="有关于技术人的成长我想说一下">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">有关于技术人的成长我想说一下</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2025/06/08/redis%208.0%E6%96%B0%E7%89%88%E6%9C%AC%E5%8F%91%E5%B8%83/" title="redis 8.0新版本发布">
+                        <span class="hidden-mobile">redis 8.0新版本发布</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"r6gyKRkhuHURhnAvgUgKlf74-gzGzoHsz","appKey":"OeekizSPHVKlyXySIt0cPf9Q","path":"window.location.pathname","placeholder":"期待你的评论","avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

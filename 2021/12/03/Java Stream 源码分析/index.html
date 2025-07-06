@@ -1,0 +1,946 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/favicon.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="alen">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="前言Java 8 的 Stream 使得代码更加简洁易懂，本篇文章深入分析 Java Stream 的工作原理，并探讨 Steam 的性能问题。  Java 8 集合中的 Stream 相当于高级版的 Iterator，它可以通过 Lambda 表达式对集合进行各种非常便利、高效的聚合操作（Aggregate Operation），或者大批量数据操作 (Bulk Data Operation)。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java Stream 源码分析">
+<meta property="og:url" content="https://liu620.github.io/2021/12/03/Java%20Stream%20%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/index.html">
+<meta property="og:site_name" content="Ali’s blog">
+<meta property="og:description" content="前言Java 8 的 Stream 使得代码更加简洁易懂，本篇文章深入分析 Java Stream 的工作原理，并探讨 Steam 的性能问题。  Java 8 集合中的 Stream 相当于高级版的 Iterator，它可以通过 Lambda 表达式对集合进行各种非常便利、高效的聚合操作（Aggregate Operation），或者大批量数据操作 (Bulk Data Operation)。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://logflies.oss-cn-chengdu.aliyuncs.com/uPic/2020-12-03-030958.jpg">
+<meta property="og:image" content="http://yano.oss-cn-beijing.aliyuncs.com/2020-12-03-031525.jpg">
+<meta property="og:image" content="http://yano.oss-cn-beijing.aliyuncs.com/2020-12-03-032745.png">
+<meta property="og:image" content="http://yano.oss-cn-beijing.aliyuncs.com/2020-12-03-032941.png">
+<meta property="og:image" content="http://yano.oss-cn-beijing.aliyuncs.com/2020-12-03-033157.png">
+<meta property="og:image" content="http://yano.oss-cn-beijing.aliyuncs.com/2020-12-03-033401.png">
+<meta property="og:image" content="http://yano.oss-cn-beijing.aliyuncs.com/2020-12-03-065103.png">
+<meta property="og:image" content="http://yano.oss-cn-beijing.aliyuncs.com/2020-12-03-070838.png">
+<meta property="og:image" content="http://yano.oss-cn-beijing.aliyuncs.com/2020-12-03-071448.png">
+<meta property="og:image" content="http://yano.oss-cn-beijing.aliyuncs.com/2020-12-03-074737.jpg">
+<meta property="og:image" content="http://yano.oss-cn-beijing.aliyuncs.com/2020-12-03-074833.jpg">
+<meta property="og:image" content="http://yano.oss-cn-beijing.aliyuncs.com/2020-12-03-074848.jpg">
+<meta property="og:image" content="http://yano.oss-cn-beijing.aliyuncs.com/2020-12-03-074906.jpg">
+<meta property="og:image" content="http://yano.oss-cn-beijing.aliyuncs.com/2020-12-03-074920.jpg">
+<meta property="og:image" content="http://yano.oss-cn-beijing.aliyuncs.com/2020-12-03-074933.jpg">
+<meta property="article:published_time" content="2021-12-03T21:00:00.000Z">
+<meta property="article:modified_time" content="2025-07-06T14:39:14.509Z">
+<meta property="article:author" content="alen">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://logflies.oss-cn-chengdu.aliyuncs.com/uPic/2020-12-03-030958.jpg">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>Java Stream 源码分析 - Ali’s blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"liu620.github.io","root":"/","version":"1.9.5","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":"01dbd6ec77a591910f5678148a605740","google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+    <!-- Baidu Analytics -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        var _hmt = _hmt || [];
+        (function() {
+          var hm = document.createElement("script");
+          hm.src = "https://hm.baidu.com/hm.js?01dbd6ec77a591910f5678148a605740";
+          var s = document.getElementsByTagName("script")[0];
+          s.parentNode.insertBefore(hm, s);
+        })();
+      }
+    </script>
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"><link rel="alternate" href="/atom.xml" title="Ali’s blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Ali&#39;s blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Java Stream 源码分析"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2021-12-03 21:00" pubdate>
+          2021年12月3日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          12k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          98 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">Java Stream 源码分析</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>Java 8 的 Stream 使得代码更加简洁易懂，本篇文章深入分析 Java Stream 的工作原理，并探讨 Steam 的性能问题。</p>
+<hr>
+<p>Java 8 集合中的 Stream 相当于高级版的 Iterator，它可以通过 Lambda 表达式对集合进行各种非常便利、高效的聚合操作（Aggregate Operation），或者大批量数据操作 (Bulk Data Operation)。</p>
+<p>Stream 的聚合操作与数据库 SQL 的聚合操作 sorted、filter、map 等类似。我们在应用层就可以高效地实现类似数据库 SQL 的聚合操作了，而在数据操作方面，Stream 不仅可以通过串行的方式实现数据操作，还可以通过并行的方式处理大批量数据，提高数据的处理效率。</p>
+<h1 id="操作分类"><a href="#操作分类" class="headerlink" title="操作分类"></a>操作分类</h1><p>官方将 Stream 中的操作分为两大类：</p>
+<ul>
+<li><code>中间操作（Intermediate operations）</code>，只对操作进行了记录，即只会返回一个流，不会进行计算操作。</li>
+<li><code>终结操作（Terminal operations）</code>，实现了计算操作。</li>
+</ul>
+<p>中间操作又可以分为：</p>
+<ul>
+<li><code>无状态（Stateless）操作</code>，元素的处理不受之前元素的影响。</li>
+<li><code>有状态（Stateful）操作</code>，指该操作只有拿到所有元素之后才能继续下去。</li>
+</ul>
+<p>终结操作又可以分为：</p>
+<ul>
+<li><code>短路（Short-circuiting）</code>操作，指遇到某些符合条件的元素就可以得到最终结果</li>
+<li><code>非短路（Unshort-circuiting）</code>操作，指必须处理完所有元素才能得到最终结果。</li>
+</ul>
+<p>操作分类详情如下图所示：</p>
+<p><img src="https://logflies.oss-cn-chengdu.aliyuncs.com/uPic/2020-12-03-030958.jpg" srcset="/img/loading.gif" lazyload></p>
+<h1 id="源码结构"><a href="#源码结构" class="headerlink" title="源码结构"></a>源码结构</h1><p>Stream 相关类和接口的继承关系如下图所示：</p>
+<p><img src="http://yano.oss-cn-beijing.aliyuncs.com/2020-12-03-031525.jpg" srcset="/img/loading.gif" lazyload></p>
+<h2 id="BaseStream"><a href="#BaseStream" class="headerlink" title="BaseStream"></a>BaseStream</h2><p>最顶端的接口类，定义了流的基本接口方法，最主要的方法为 spliterator、isParallel。</p>
+<p><img src="http://yano.oss-cn-beijing.aliyuncs.com/2020-12-03-032745.png" srcset="/img/loading.gif" lazyload></p>
+<h2 id="Stream"><a href="#Stream" class="headerlink" title="Stream"></a>Stream</h2><p>最顶端的接口类。定义了流的常用方法，例如 map、filter、sorted、limit、skip、collect 等。</p>
+<p><img src="http://yano.oss-cn-beijing.aliyuncs.com/2020-12-03-032941.png" srcset="/img/loading.gif" lazyload></p>
+<h2 id="ReferencePipeline"><a href="#ReferencePipeline" class="headerlink" title="ReferencePipeline"></a>ReferencePipeline</h2><p>ReferencePipeline 是一个结构类，定义内部类组装了各种操作流，定义了<code>Head</code>、<code>StatelessOp</code>、<code>StatefulOp</code>三个内部类，实现了 BaseStream 与 Stream 的接口方法。</p>
+<p><img src="http://yano.oss-cn-beijing.aliyuncs.com/2020-12-03-033157.png" srcset="/img/loading.gif" lazyload></p>
+<h2 id="Sink"><a href="#Sink" class="headerlink" title="Sink"></a>Sink</h2><p>Sink 接口定义了 Stream 之间的操作行为，包含 <code>begin()</code>、<code>end()</code>、<code>cancellationRequested()</code>、<code>accpt()</code>四个方法。ReferencePipeline 最终会将整个 Stream 流操作组装成一个调用链，而这条调用链上的各个 Stream 操作的上下关系就是通过 Sink 接口协议来定义实现的。</p>
+<p><img src="http://yano.oss-cn-beijing.aliyuncs.com/2020-12-03-033401.png" srcset="/img/loading.gif" lazyload></p>
+<h1 id="操作叠加"><a href="#操作叠加" class="headerlink" title="操作叠加"></a>操作叠加</h1><p>Stream 的基础用法就不再叙述了，这里从一段代码开始，分析 Stream 的工作原理。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Test</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">testStream</span><span class="hljs-params">()</span> &#123;<br>    List&lt;String&gt; names = Arrays.asList(<span class="hljs-string">&quot;kotlin&quot;</span>, <span class="hljs-string">&quot;java&quot;</span>, <span class="hljs-string">&quot;go&quot;</span>);<br>    <span class="hljs-type">int</span> <span class="hljs-variable">maxLength</span> <span class="hljs-operator">=</span> names.stream().filter(name -&gt; name.length() &lt;= <span class="hljs-number">4</span>).map(String::length)<br>            .max(Comparator.naturalOrder()).orElse(-<span class="hljs-number">1</span>);<br>    System.out.println(maxLength);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>当使用 Stream 时，主要有 3 部分组成，下面一一讲解。</p>
+<h2 id="加载数据源"><a href="#加载数据源" class="headerlink" title="加载数据源"></a>加载数据源</h2><p>调用 <code>names.stream()</code> 方法，会初次加载 ReferencePipeline 的 Head 对象，此时为加载数据源操作。</p>
+<p>java.util.Collection#stream</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">default</span> Stream&lt;E&gt; <span class="hljs-title function_">stream</span><span class="hljs-params">()</span> &#123;<br>    <span class="hljs-keyword">return</span> StreamSupport.stream(spliterator(), <span class="hljs-literal">false</span>);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>StreamSupport 类中的 stream 方法，初始化了一个 ReferencePipeline 的 Head 内部类对象。</p>
+<p>java.util.stream.StreamSupport#stream(java.util.Spliterator<T>, boolean)</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> &lt;T&gt; Stream&lt;T&gt; <span class="hljs-title function_">stream</span><span class="hljs-params">(Spliterator&lt;T&gt; spliterator, <span class="hljs-type">boolean</span> parallel)</span> &#123;<br>    Objects.requireNonNull(spliterator);<br>    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ReferencePipeline</span>.Head&lt;&gt;(spliterator,<br>                                        StreamOpFlag.fromCharacteristics(spliterator),<br>                                        parallel);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="中间操作"><a href="#中间操作" class="headerlink" title="中间操作"></a>中间操作</h2><p>接着为 <code>filter(name -&gt; name.length() &lt;= 4).mapToInt(String::length)</code>，是中间操作，分为无状态中间操作 StatelessOp 对象和有状态操作 StatefulOp 对象，此时的 Stage 并没有执行，而是通过 AbstractPipeline 生成了一个中间操作 Stage 链表。</p>
+<p>java.util.stream.ReferencePipeline#filter</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Override</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">final</span> Stream&lt;P_OUT&gt; <span class="hljs-title function_">filter</span><span class="hljs-params">(Predicate&lt;? <span class="hljs-built_in">super</span> P_OUT&gt; predicate)</span> &#123;<br>    Objects.requireNonNull(predicate);<br>    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">StatelessOp</span>&lt;P_OUT, P_OUT&gt;(<span class="hljs-built_in">this</span>, StreamShape.REFERENCE,<br>                                    StreamOpFlag.NOT_SIZED) &#123;<br>        <span class="hljs-meta">@Override</span><br>        Sink&lt;P_OUT&gt; <span class="hljs-title function_">opWrapSink</span><span class="hljs-params">(<span class="hljs-type">int</span> flags, Sink&lt;P_OUT&gt; sink)</span> &#123;<br>            <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Sink</span>.ChainedReference&lt;P_OUT, P_OUT&gt;(sink) &#123;<br>                <span class="hljs-meta">@Override</span><br>                <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">begin</span><span class="hljs-params">(<span class="hljs-type">long</span> size)</span> &#123;<br>                    downstream.begin(-<span class="hljs-number">1</span>);<br>                &#125;<br><br>                <span class="hljs-meta">@Override</span><br>                <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">accept</span><span class="hljs-params">(P_OUT u)</span> &#123;<br>                    <span class="hljs-keyword">if</span> (predicate.test(u))<br>                        downstream.accept(u);<br>                &#125;<br>            &#125;;<br>        &#125;<br>    &#125;;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>java.util.stream.ReferencePipeline#map</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Override</span><br><span class="hljs-meta">@SuppressWarnings(&quot;unchecked&quot;)</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">final</span> &lt;R&gt; Stream&lt;R&gt; <span class="hljs-title function_">map</span><span class="hljs-params">(Function&lt;? <span class="hljs-built_in">super</span> P_OUT, ? extends R&gt; mapper)</span> &#123;<br>    Objects.requireNonNull(mapper);<br>    <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">StatelessOp</span>&lt;P_OUT, R&gt;(<span class="hljs-built_in">this</span>, StreamShape.REFERENCE,<br>                                    StreamOpFlag.NOT_SORTED | StreamOpFlag.NOT_DISTINCT) &#123;<br>        <span class="hljs-meta">@Override</span><br>        Sink&lt;P_OUT&gt; <span class="hljs-title function_">opWrapSink</span><span class="hljs-params">(<span class="hljs-type">int</span> flags, Sink&lt;R&gt; sink)</span> &#123;<br>            <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">Sink</span>.ChainedReference&lt;P_OUT, R&gt;(sink) &#123;<br>                <span class="hljs-meta">@Override</span><br>                <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">accept</span><span class="hljs-params">(P_OUT u)</span> &#123;<br>                    downstream.accept(mapper.apply(u));<br>                &#125;<br>            &#125;;<br>        &#125;<br>    &#125;;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>可以看到 filter 和 map 方法都返回了一个新的 <code>StatelessOp</code> 对象。new StatelessOp 将会调用父类 AbstractPipeline 的构造函数，这个构造函数将前后的 Stage 联系起来，生成一个 Stage 链表：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs java">AbstractPipeline(AbstractPipeline&lt;?, E_IN, ?&gt; previousStage, <span class="hljs-type">int</span> opFlags) &#123;<br>    <span class="hljs-keyword">if</span> (previousStage.linkedOrConsumed)<br>        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">IllegalStateException</span>(MSG_STREAM_LINKED);<br>    previousStage.linkedOrConsumed = <span class="hljs-literal">true</span>;<br>    previousStage.nextStage = <span class="hljs-built_in">this</span>;<br><br>    <span class="hljs-built_in">this</span>.previousStage = previousStage;<br>    <span class="hljs-built_in">this</span>.sourceOrOpFlags = opFlags &amp; StreamOpFlag.OP_MASK;<br>    <span class="hljs-built_in">this</span>.combinedFlags = StreamOpFlag.combineOpFlags(opFlags, previousStage.combinedFlags);<br>    <span class="hljs-built_in">this</span>.sourceStage = previousStage.sourceStage;<br>    <span class="hljs-keyword">if</span> (opIsStateful())<br>        sourceStage.sourceAnyStateful = <span class="hljs-literal">true</span>;<br>    <span class="hljs-built_in">this</span>.depth = previousStage.depth + <span class="hljs-number">1</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="终结操作"><a href="#终结操作" class="headerlink" title="终结操作"></a>终结操作</h2><p>最后为 <code>max(Comparator.naturalOrder())</code>，是终结操作，会生成一个最终的 Stage，通过这个 Stage 触发之前的中间操作，从最后一个 Stage 开始，递归产生一个 Sink 链。</p>
+<p>java.util.stream.ReferencePipeline#max</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Override</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">final</span> Optional&lt;P_OUT&gt; <span class="hljs-title function_">max</span><span class="hljs-params">(Comparator&lt;? <span class="hljs-built_in">super</span> P_OUT&gt; comparator)</span> &#123;<br>    <span class="hljs-keyword">return</span> reduce(BinaryOperator.maxBy(comparator));<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>最终调用到 java.util.stream.AbstractPipeline#wrapSink，这个方法会调用 opWrapSink 生成一个 Sink 链表，对应到本文的例子，就是 filter 和 map 操作。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Override</span><br><span class="hljs-meta">@SuppressWarnings(&quot;unchecked&quot;)</span><br><span class="hljs-keyword">final</span> &lt;P_IN&gt; Sink&lt;P_IN&gt; <span class="hljs-title function_">wrapSink</span><span class="hljs-params">(Sink&lt;E_OUT&gt; sink)</span> &#123;<br>    Objects.requireNonNull(sink);<br><br>    <span class="hljs-keyword">for</span> ( <span class="hljs-meta">@SuppressWarnings(&quot;rawtypes&quot;)</span> AbstractPipeline p=AbstractPipeline.<span class="hljs-built_in">this</span>; p.depth &gt; <span class="hljs-number">0</span>; p=p.previousStage) &#123;<br>        sink = p.opWrapSink(p.previousStage.combinedFlags, sink);<br>    &#125;<br>    <span class="hljs-keyword">return</span> (Sink&lt;P_IN&gt;) sink;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>在上面 opWrapSink 上断点调试，发现最终会调用到本例中的 filter 和 map 操作。</p>
+<p><img src="http://yano.oss-cn-beijing.aliyuncs.com/2020-12-03-065103.png" srcset="/img/loading.gif" lazyload></p>
+<p>wrapAndCopyInto 生成 Sink 链表后，会通过 copyInfo 方法执行 Sink 链表的具体操作。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Override</span><br><span class="hljs-keyword">final</span> &lt;P_IN&gt; <span class="hljs-keyword">void</span> <span class="hljs-title function_">copyInto</span><span class="hljs-params">(Sink&lt;P_IN&gt; wrappedSink, Spliterator&lt;P_IN&gt; spliterator)</span> &#123;<br>    Objects.requireNonNull(wrappedSink);<br><br>    <span class="hljs-keyword">if</span> (!StreamOpFlag.SHORT_CIRCUIT.isKnown(getStreamAndOpFlags())) &#123;<br>        wrappedSink.begin(spliterator.getExactSizeIfKnown());<br>        spliterator.forEachRemaining(wrappedSink);<br>        wrappedSink.end();<br>    &#125;<br>    <span class="hljs-keyword">else</span> &#123;<br>        copyIntoWithCancel(wrappedSink, spliterator);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>上面的核心代码是：</p>
+<figure class="highlight abnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs abnf">spliterator.forEachRemaining(wrappedSink)<span class="hljs-comment">;</span><br></code></pre></td></tr></table></figure>
+
+<p>java.util.Spliterators.ArraySpliterator#forEachRemaining</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Override</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">forEachRemaining</span><span class="hljs-params">(Consumer&lt;? <span class="hljs-built_in">super</span> T&gt; action)</span> &#123;<br>    Object[] a; <span class="hljs-type">int</span> i, hi; <span class="hljs-comment">// hoist accesses and checks from loop</span><br>    <span class="hljs-keyword">if</span> (action == <span class="hljs-literal">null</span>)<br>        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">NullPointerException</span>();<br>    <span class="hljs-keyword">if</span> ((a = array).length &gt;= (hi = fence) &amp;&amp;<br>        (i = index) &gt;= <span class="hljs-number">0</span> &amp;&amp; i &lt; (index = hi)) &#123;<br>        <span class="hljs-keyword">do</span> &#123; action.accept((T)a[i]); &#125; <span class="hljs-keyword">while</span> (++i &lt; hi);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>断点调试，可以发现首先进入了 filter 的 Sink，其中 accept 方法的入参是 list 中的第一个元素“kotlin”（代码中的 3 个元素是：”kotlin”, “java”, “go”）。filter 的传入是一个 Lambda 表达式：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java">filter(name -&gt; name.length() &lt;= <span class="hljs-number">4</span>)<br></code></pre></td></tr></table></figure>
+
+<p>显然这个第一个元素“kotlin”的 predicate 是不会进入的。</p>
+<p><img src="http://yano.oss-cn-beijing.aliyuncs.com/2020-12-03-070838.png" srcset="/img/loading.gif" lazyload></p>
+<p>对于第二个元素“java”，predicate.test 会返回 true（字符串“java”的长度&lt;&#x3D;4），则会进入 map 的 accept 方法。</p>
+<p><img src="http://yano.oss-cn-beijing.aliyuncs.com/2020-12-03-071448.png" srcset="/img/loading.gif" lazyload></p>
+<p>本次调用 accept 方法时，empty 为 false，会将 map 后的结果（int 类型的 4）赋值给 t。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> &lt;T&gt; TerminalOp&lt;T, Optional&lt;T&gt;&gt;<br><span class="hljs-title function_">makeRef</span><span class="hljs-params">(BinaryOperator&lt;T&gt; operator)</span> &#123;<br>    Objects.requireNonNull(operator);<br>    <span class="hljs-keyword">class</span> <span class="hljs-title class_">ReducingSink</span><br>            <span class="hljs-keyword">implements</span> <span class="hljs-title class_">AccumulatingSink</span>&lt;T, Optional&lt;T&gt;, ReducingSink&gt; &#123;<br>        <span class="hljs-keyword">private</span> <span class="hljs-type">boolean</span> empty;<br>        <span class="hljs-keyword">private</span> T state;<br><br>        <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">begin</span><span class="hljs-params">(<span class="hljs-type">long</span> size)</span> &#123;<br>            empty = <span class="hljs-literal">true</span>;<br>            state = <span class="hljs-literal">null</span>;<br>        &#125;<br><br>        <span class="hljs-meta">@Override</span><br>        <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">accept</span><span class="hljs-params">(T t)</span> &#123;<br>            <span class="hljs-keyword">if</span> (empty) &#123;<br>                empty = <span class="hljs-literal">false</span>;<br>                state = t;<br>            &#125; <span class="hljs-keyword">else</span> &#123;<br>                state = operator.apply(state, t);<br>            &#125;<br>        &#125;<br><br>        ……<br>        &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>对于第三个元素“go”，也会进入 accept 方法，此时 empty 为 true, map 后的结果（int 类型的 2）会与上次的结果 4 通过自定义的比较器相比较，存入符合结果的值。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> &lt;T&gt; BinaryOperator&lt;T&gt; <span class="hljs-title function_">maxBy</span><span class="hljs-params">(Comparator&lt;? <span class="hljs-built_in">super</span> T&gt; comparator)</span> &#123;<br>    Objects.requireNonNull(comparator);<br>    <span class="hljs-keyword">return</span> (a, b) -&gt; comparator.compare(a, b) &gt;= <span class="hljs-number">0</span> ? a : b;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>本文代码中的 max 传入的比较器为：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java">max(Comparator.naturalOrder())<br></code></pre></td></tr></table></figure>
+
+<p>至此会返回 int 类型的 4。</p>
+<h1 id="并行处理"><a href="#并行处理" class="headerlink" title="并行处理"></a>并行处理</h1><p>上面的例子是串行处理的，如果要改成并行也很简单，只需要在 stream() 方法后加上 <code>parallel()</code> 就可以了，并行代码可以写成：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Test</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">testStream</span><span class="hljs-params">()</span> &#123;<br>    List&lt;String&gt; names = Arrays.asList(<span class="hljs-string">&quot;kotlin&quot;</span>, <span class="hljs-string">&quot;java&quot;</span>, <span class="hljs-string">&quot;go&quot;</span>);<br>    <span class="hljs-type">int</span> <span class="hljs-variable">maxLength</span> <span class="hljs-operator">=</span> names.stream().parallel().filter(name -&gt; name.length() &lt;= <span class="hljs-number">4</span>)<br>            .map(String::length).max(Comparator.naturalOrder()).orElse(-<span class="hljs-number">1</span>);<br>    System.out.println(maxLength);<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>Stream 的并行处理在执行终结操作之前，跟串行处理的实现是一样的。而在调用终结方法之后，实现的方式就有点不太一样，会调用 TerminalOp 的 evaluateParallel 方法进行并行处理。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">final</span> &lt;R&gt; R <span class="hljs-title function_">evaluate</span><span class="hljs-params">(TerminalOp&lt;E_OUT, R&gt; terminalOp)</span> &#123;<br>    <span class="hljs-keyword">assert</span> <span class="hljs-title function_">getOutputShape</span><span class="hljs-params">()</span> == terminalOp.inputShape();<br>    <span class="hljs-keyword">if</span> (linkedOrConsumed)<br>        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">IllegalStateException</span>(MSG_STREAM_LINKED);<br>    linkedOrConsumed = <span class="hljs-literal">true</span>;<br><br>    <span class="hljs-keyword">return</span> isParallel()<br>            ? terminalOp.evaluateParallel(<span class="hljs-built_in">this</span>, sourceSpliterator(terminalOp.getOpFlags()))<br>            : terminalOp.evaluateSequential(<span class="hljs-built_in">this</span>, sourceSpliterator(terminalOp.getOpFlags()));<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>核心是使用了 ForkJoin 框架，对 Stream 处理进行分片，最终会调用下面的代码，这里就不展开分析了。</p>
+<p>java.util.stream.AbstractTask#compute</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Override</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">compute</span><span class="hljs-params">()</span> &#123;<br>    Spliterator&lt;P_IN&gt; rs = spliterator, ls; <span class="hljs-comment">// right, left spliterators</span><br>    <span class="hljs-type">long</span> <span class="hljs-variable">sizeEstimate</span> <span class="hljs-operator">=</span> rs.estimateSize();<br>    <span class="hljs-type">long</span> <span class="hljs-variable">sizeThreshold</span> <span class="hljs-operator">=</span> getTargetSize(sizeEstimate);<br>    <span class="hljs-type">boolean</span> <span class="hljs-variable">forkRight</span> <span class="hljs-operator">=</span> <span class="hljs-literal">false</span>;<br>    <span class="hljs-meta">@SuppressWarnings(&quot;unchecked&quot;)</span> <span class="hljs-type">K</span> <span class="hljs-variable">task</span> <span class="hljs-operator">=</span> (K) <span class="hljs-built_in">this</span>;<br>    <span class="hljs-keyword">while</span> (sizeEstimate &gt; sizeThreshold &amp;&amp; (ls = rs.trySplit()) != <span class="hljs-literal">null</span>) &#123;<br>        K leftChild, rightChild, taskToFork;<br>        task.leftChild  = leftChild = task.makeChild(ls);<br>        task.rightChild = rightChild = task.makeChild(rs);<br>        task.setPendingCount(<span class="hljs-number">1</span>);<br>        <span class="hljs-keyword">if</span> (forkRight) &#123;<br>            forkRight = <span class="hljs-literal">false</span>;<br>            rs = ls;<br>            task = leftChild;<br>            taskToFork = rightChild;<br>        &#125;<br>        <span class="hljs-keyword">else</span> &#123;<br>            forkRight = <span class="hljs-literal">true</span>;<br>            task = rightChild;<br>            taskToFork = leftChild;<br>        &#125;<br>        taskToFork.fork();<br>        sizeEstimate = rs.estimateSize();<br>    &#125;<br>    task.setLocalResult(task.doLeaf());<br>    task.tryComplete();<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h2 id="并行错误的使用方法"><a href="#并行错误的使用方法" class="headerlink" title="并行错误的使用方法"></a>并行错误的使用方法</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Test</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">testParallelWrong</span><span class="hljs-params">()</span> &#123;<br>    List&lt;Integer&gt; parallelList = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ArrayList</span>&lt;&gt;();<br>    IntStream.range(<span class="hljs-number">0</span>, <span class="hljs-number">1000</span>).boxed().parallel().filter(i -&gt; i % <span class="hljs-number">2</span> == <span class="hljs-number">1</span>)<br>            .forEach(parallelList::add);<br>    System.out.println(parallelList.size());<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>上面的输出结果会经常小于 500，这是因为 parallelList 的类型是 ArrayList，并不是线程安全的，在执行 add 操作时，可能正好赶上扩容或者线程被占用，会覆盖其他线程的赋好的值。</p>
+<h2 id="并行正确的使用方法"><a href="#并行正确的使用方法" class="headerlink" title="并行正确的使用方法"></a>并行正确的使用方法</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Test</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">testParallelRight</span><span class="hljs-params">()</span> &#123;<br>    List&lt;Integer&gt; parallelList = IntStream.range(<span class="hljs-number">0</span>, <span class="hljs-number">1000</span>).boxed().parallel()<br>            .filter(i -&gt; i % <span class="hljs-number">2</span> == <span class="hljs-number">1</span>).collect(Collectors.toList());<br>    System.out.println(parallelList.size());<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>上面的输出结果是 500。</p>
+<h1 id="性能"><a href="#性能" class="headerlink" title="性能"></a>性能</h1><p>下面的文章参考自：<a target="_blank" rel="noopener" href="https://github.com/CarpenterLee/JavaLambdaInternals/blob/master/8-Stream%20Performance.md">JavaLambdaInternals&#x2F;8-Stream Performance.md</a>，侵删。</p>
+<p>为保证测试结果真实可信，我们将 JVM 运行在<code>-server</code>模式下，测试数据在 GB 量级，测试机器采用常见的商用服务器，配置如下：</p>
+<table width="300px"><tr><td>OS</td><td>CentOS 6.7 x86_64</td></tr><tr><td>CPU</td><td>Intel Xeon X5675, 12M Cache 3.06 GHz, 6 Cores 12 Threads</td></tr><tr><td>内存</td><td>96GB</td></tr><tr><td>JDK</td><td>java version 1.8.0_91, Java HotSpot(TM) 64-Bit Server VM</td></tr></table>
+
+<p>测试 <a href="./perf/StreamBenchmark/src/lee">所用代码在这里</a>，测试 <a href="./perf/Stream_performance.xlsx">结果汇总</a>.</p>
+<h2 id="测试方法和测试数据"><a href="#测试方法和测试数据" class="headerlink" title="测试方法和测试数据"></a>测试方法和测试数据</h2><p>性能测试并不是容易的事，Java 性能测试更费劲，因为虚拟机对性能的影响很大，JVM 对性能的影响有两方面：</p>
+<ol>
+<li>GC 的影响。GC 的行为是 Java 中很不好控制的一块，为增加确定性，我们手动指定使用 CMS 收集器，并使用 10GB 固定大小的堆内存。具体到 JVM 参数就是<code>-XX:+UseConcMarkSweepGC -Xms10G -Xmx10G</code></li>
+<li>JIT(Just-In-Time) 即时编译技术。即时编译技术会将热点代码在 JVM 运行的过程中编译成本地代码，测试时我们会先对程序预热，触发对测试函数的即时编译。相关的 JVM 参数是<code>-XX:CompileThreshold=10000</code>。</li>
+</ol>
+<p>Stream 并行执行时用到<code>ForkJoinPool.commonPool()</code>得到的线程池，为控制并行度我们使用 Linux 的<code>taskset</code>命令指定 JVM 可用的核数。</p>
+<p>测试数据由程序随机生成。为防止一次测试带来的抖动，测试 4 次求出平均时间作为运行时间。</p>
+<h2 id="实验一-基本类型迭代"><a href="#实验一-基本类型迭代" class="headerlink" title="实验一 基本类型迭代"></a>实验一 基本类型迭代</h2><p>测试内容：找出整型数组中的最小值。对比 for 循环外部迭代和 Stream API 内部迭代性能。</p>
+<p>测试程序 <a href="./perf/StreamBenchmark/src/lee/IntTest.java">IntTest</a>，测试结果如下图：</p>
+<p><img src="http://yano.oss-cn-beijing.aliyuncs.com/2020-12-03-074737.jpg" srcset="/img/loading.gif" lazyload></p>
+<p>图中展示的是 for 循环外部迭代耗时为基准的时间比值。分析如下：</p>
+<ol>
+<li>对于基本类型 Stream 串行迭代的性能开销明显高于外部迭代开销（两倍）；</li>
+<li>Stream 并行迭代的性能比串行迭代和外部迭代都好。</li>
+</ol>
+<p>并行迭代性能跟可利用的核数有关，上图中的并行迭代使用了全部 12 个核，为考察使用核数对性能的影响，我们专门测试了不同核数下的 Stream 并行迭代效果：</p>
+<p><img src="http://yano.oss-cn-beijing.aliyuncs.com/2020-12-03-074833.jpg" srcset="/img/loading.gif" lazyload></p>
+<p>分析，对于基本类型：</p>
+<ol>
+<li>使用 Stream 并行 API 在单核情况下性能很差，比 Stream 串行 API 的性能还差；</li>
+<li>随着使用核数的增加，Stream 并行效果逐渐变好，比使用 for 循环外部迭代的性能还好。</li>
+</ol>
+<p>以上两个测试说明，对于基本类型的简单迭代，Stream 串行迭代性能更差，但多核情况下 Stream 迭代时性能较好。</p>
+<h2 id="实验二-对象迭代"><a href="#实验二-对象迭代" class="headerlink" title="实验二 对象迭代"></a>实验二 对象迭代</h2><p>再来看对象的迭代效果。</p>
+<p>测试内容：找出字符串列表中最小的元素（自然顺序），对比 for 循环外部迭代和 Stream API 内部迭代性能。</p>
+<p>测试程序 <a href="./perf/StreamBenchmark/src/lee/StringTest.java">StringTest</a>，测试结果如下图：</p>
+<p><img src="http://yano.oss-cn-beijing.aliyuncs.com/2020-12-03-074848.jpg" srcset="/img/loading.gif" lazyload></p>
+<p>结果分析如下：</p>
+<ol>
+<li>对于对象类型 Stream 串行迭代的性能开销仍然高于外部迭代开销（1.5 倍），但差距没有基本类型那么大。</li>
+<li>Stream 并行迭代的性能比串行迭代和外部迭代都好。</li>
+</ol>
+<p>再来单独考察 Stream 并行迭代效果：</p>
+<p><img src="http://yano.oss-cn-beijing.aliyuncs.com/2020-12-03-074906.jpg" srcset="/img/loading.gif" lazyload></p>
+<p>分析，对于对象类型：</p>
+<ol>
+<li>使用 Stream 并行 API 在单核情况下性能比 for 循环外部迭代差；</li>
+<li>随着使用核数的增加，Stream 并行效果逐渐变好，多核带来的效果明显。</li>
+</ol>
+<p>以上两个测试说明，对于对象类型的简单迭代，Stream 串行迭代性能更差，但多核情况下 Stream 迭代时性能较好。</p>
+<h2 id="实验三-复杂对象归约"><a href="#实验三-复杂对象归约" class="headerlink" title="实验三 复杂对象归约"></a>实验三 复杂对象归约</h2><p>从实验一、二的结果来看，Stream 串行执行的效果都比外部迭代差（很多），是不是说明 Stream 真的不行了？先别下结论，我们再来考察一下更复杂的操作。</p>
+<p>测试内容：给定订单列表，统计每个用户的总交易额。对比使用外部迭代手动实现和 Stream API 之间的性能。</p>
+<p>我们将订单简化为<code>&lt;userName, price, timeStamp&gt;</code>构成的元组，并用<code>Order</code>对象来表示。测试程序 <a href="./perf/StreamBenchmark/src/lee/ReductionTest.java">ReductionTest</a>，测试结果如下图：</p>
+<p><img src="http://yano.oss-cn-beijing.aliyuncs.com/2020-12-03-074920.jpg" srcset="/img/loading.gif" lazyload></p>
+<p>分析，对于复杂的归约操作：</p>
+<ol>
+<li>Stream API 的性能普遍好于外部手动迭代，并行 Stream 效果更佳；</li>
+</ol>
+<p>再来考察并行度对并行效果的影响，测试结果如下：</p>
+<p><img src="http://yano.oss-cn-beijing.aliyuncs.com/2020-12-03-074933.jpg" srcset="/img/loading.gif" lazyload></p>
+<p>分析，对于复杂的归约操作：</p>
+<ol>
+<li>使用 Stream 并行归约在单核情况下性能比串行归约以及手动归约都要差，简单说就是最差的；</li>
+<li>随着使用核数的增加，Stream 并行效果逐渐变好，多核带来的效果明显。</li>
+</ol>
+<p>以上两个实验说明，对于复杂的归约操作，Stream 串行归约效果好于手动归约，在多核情况下，并行归约效果更佳。我们有理由相信，对于其他复杂的操作，Stream API 也能表现出相似的性能表现。</p>
+<h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><p>上述三个实验的结果可以总结如下：</p>
+<ol>
+<li>对于<code>简单操作</code>，比如最简单的遍历，<code>Stream 串行 API 性能明显差于显式迭代</code>，但并行的 Stream API 能够发挥多核特性。</li>
+<li>对于<code>复杂操作</code>，Stream 串行 API 性能可以和手动实现的效果匹敌，在<code>并行执行时 Stream API 效果远超手动实现</code>。</li>
+</ol>
+<p>所以，如果出于性能考虑：</p>
+<ol>
+<li>对于简单操作推荐使用外部迭代手动实现</li>
+<li>对于复杂操作，推荐使用 Stream API</li>
+<li>在多核情况下，推荐使用并行 Stream API 来发挥多核优势</li>
+<li>单核情况下不建议使用并行 Stream API</li>
+</ol>
+<h2 id="为什么简单操作，Stream-API-不如迭代，而复杂操作性能差不多？"><a href="#为什么简单操作，Stream-API-不如迭代，而复杂操作性能差不多？" class="headerlink" title="为什么简单操作，Stream API 不如迭代，而复杂操作性能差不多？"></a>为什么简单操作，Stream API 不如迭代，而复杂操作性能差不多？</h2><p>其实根据上面 Stream 源码的分析，结合 Stream 的使用，可以看出如果是简单操作的话，Stream 也会包括加载数据源、中间操作、终结操作等，所以简单操作会慢于显式迭代。</p>
+<p>但是如果是复杂操作，Stream 加载数据源、中间操作、终结操作相对来说就没有那么重要了，甚至还可以包括短路等优化，所以跟显式迭代的性能并没有什么差别。同时 Stream 还能增加可读性，很方便利用多核性能，这是显示迭代不能实现的。</p>
+<p>（个人思考的结果，有问题欢迎留言交流 ^_^）</p>
+<h1 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h1><ol>
+<li><a target="_blank" rel="noopener" href="https://github.com/CarpenterLee/JavaLambdaInternals/blob/master/6-Stream%20Pipelines.md">JavaLambdaInternals&#x2F;6-Stream Pipelines.md</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/CarpenterLee/JavaLambdaInternals/blob/master/8-Stream%20Performance.md">JavaLambdaInternals&#x2F;8-Stream Performance.md</a></li>
+<li>极客时间-Java 性能调优实战&#x2F;06.Stream 如何提高遍历集合效率？</li>
+</ol>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/java/" class="category-chain-item">java</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Java Stream 源码分析</div>
+      <div>https://liu620.github.io/2021/12/03/Java Stream 源码分析/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>alen</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2021年12月3日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/12/06/Java%20Features%20from%20Java%208%20to%20Java%2017/" title="Java Features from Java 8 to Java 17">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Java Features from Java 8 to Java 17</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/11/29/Java%20String%20%E6%BC%94%E8%BF%9B%E5%85%A8%E8%A7%A3%E6%9E%90/" title="Java String 演进全解析">
+                        <span class="hidden-mobile">Java String 演进全解析</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  
+  
+    <article id="comments" lazyload>
+      
+  <div id="valine"></div>
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#valine', function() {
+      Fluid.utils.createScript('https://lib.baomitu.com/valine/1.5.1/Valine.min.js', function() {
+        var options = Object.assign(
+          {"appId":"r6gyKRkhuHURhnAvgUgKlf74-gzGzoHsz","appKey":"OeekizSPHVKlyXySIt0cPf9Q","path":"window.location.pathname","placeholder":"期待你的评论","avatar":"retro","meta":["nick","mail","link"],"requiredFields":[],"pageSize":10,"lang":"zh-CN","highlight":false,"recordIP":false,"serverURLs":"","emojiCDN":null,"emojiMaps":null,"enableQQ":false},
+          {
+            el: "#valine",
+            path: window.location.pathname
+          }
+        )
+        new Valine(options);
+        Fluid.utils.waitElementVisible('#valine .vcontent', () => {
+          var imgSelector = '#valine .vcontent img:not(.vemoji)';
+          Fluid.plugins.imageCaption(imgSelector);
+          Fluid.plugins.fancyBox(imgSelector);
+        })
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+    </article>
+  
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
